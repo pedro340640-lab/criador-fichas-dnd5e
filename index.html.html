@@ -1,0 +1,2949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forja de Heróis — Criador de Fichas D&D 5e</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-obsidian: #0b0d11;
+      --bg-card: #131720;
+      --bg-elevated: #1a202c;
+      --border-subtle: #283040;
+      --gold-primary: #d4af37;
+      --gold-hover: #e8c758;
+    }
+
+    body {
+      background-color: var(--bg-obsidian);
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 88% 92%, rgba(153, 27, 27, 0.12) 0%, transparent 45%);
+      min-height: 100vh;
+    }
+
+    .font-fantasy {
+      font-family: 'Cinzel', serif;
+    }
+
+    .card-obsidian {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 0.75rem;
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6);
+    }
+
+    .input-obsidian {
+      background-color: #0d1017;
+      border: 1px solid var(--border-subtle);
+      color: #f8fafc;
+      border-radius: 0.5rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input-obsidian:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.22);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #b38e22 100%);
+      color: #0b0d11;
+      font-weight: 700;
+      border-radius: 0.5rem;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #e8c758 0%, #c8a12e 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-subtle {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: #cbd5e1;
+      border-radius: 0.5rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-subtle:hover {
+      border-color: #475569;
+      color: #ffffff;
+      background-color: #232a38;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0d11;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #283040;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d4af37;
+    }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        background-image: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-show-all {
+        display: block !important;
+      }
+      .card-obsidian {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        color: #0f172a !important;
+        break-inside: avoid;
+        margin-bottom: 1rem !important;
+      }
+      .input-obsidian {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+      }
+      .text-\[\#d4af37\], .text-amber-400, .text-amber-300 {
+        color: #92400e !important;
+      }
+      .text-slate-300, .text-slate-400, .text-slate-500 {
+        color: #334155 !important;
+      }
+      #sheet-layout-grid {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- ===================================================================== -->
+  <!-- CABEÇALHO SUPERIOR                                                    -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-30 bg-[#0b0d11]/95 backdrop-blur-md border-b border-[#283040] no-print">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Logotipo -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('gallery')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-950/60 to-amber-700/20 border border-[#d4af37]/60 flex items-center justify-center text-[#d4af37] shadow-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-fantasy text-lg sm:text-xl font-bold tracking-wider text-[#d4af37]">FORJA DE HERÓIS • D&D 5E</h1>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Criador & Gerenciador de Fichas — Dungeons & Dragons 5ª Edição</p>
+        </div>
+      </div>
+
+      <!-- Navegação Principal -->
+      <nav class="flex items-center bg-[#131720] p-1 rounded-lg border border-[#283040]">
+        <button id="tab-gallery" onclick="switchView('gallery')" class="px-3 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all bg-[#d4af37] text-[#0b0d11]">
+          Minhas Fichas
+        </button>
+        <button id="tab-editor" onclick="switchView('editor')" class="px-3 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white">
+          Ficha / Editor 5e
+        </button>
+      </nav>
+
+      <!-- Ações Rápidas -->
+      <div class="flex items-center gap-2">
+        <span id="save-indicator" class="hidden xl:inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          Salvo
+        </span>
+        <button onclick="createNewCharacter()" class="btn-gold px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-amber-950/30">
+          <span>+ Nova Ficha</span>
+        </button>
+        <button onclick="exportCurrentCharacter()" title="Exportar Ficha Atual em JSON" class="btn-subtle p-2 text-xs sm:text-sm flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#d4af37]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span class="hidden lg:inline">Exportar</span>
+        </button>
+        <label title="Importar Ficha JSON" class="btn-subtle p-2 text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span class="hidden lg:inline">Importar</span>
+          <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importCharacterJSON(event)" />
+        </label>
+        <button onclick="window.print()" title="Imprimir ou Salvar PDF" class="btn-subtle p-2 text-xs sm:text-sm flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span class="hidden lg:inline">Imprimir / PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast de Feedback -->
+  <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 pointer-events-none no-print"></div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL DE CONFIRMAÇÃO                                                  -->
+  <!-- ===================================================================== -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 no-print">
+    <div class="card-obsidian max-w-md w-full p-6 border-[#d4af37]/40">
+      <h3 id="confirm-title" class="font-fantasy text-lg font-bold text-[#d4af37] mb-2">Confirmar Ação</h3>
+      <p id="confirm-message" class="text-sm text-slate-300 mb-6">Tem certeza?</p>
+      <div class="flex justify-end gap-3">
+        <button onclick="closeConfirmModal()" class="btn-subtle px-4 py-2 text-sm">Cancelar</button>
+        <button id="confirm-yes-btn" class="bg-red-800 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL GERADOR DE ATRIBUTOS (POINT BUY 27 PTS & 4D6 DESCARTA MENOR)   -->
+  <!-- ===================================================================== -->
+  <div id="ability-generator-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 no-print">
+    <div class="card-obsidian max-w-2xl w-full p-6 border-[#d4af37]/50 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-fantasy text-xl font-bold text-[#d4af37]">Distribuição de Atributos (D&D 5e)</h3>
+        <button onclick="closeAbilityGenerator()" class="text-slate-400 hover:text-white text-lg px-2">✕</button>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-400 mb-4">
+        Utilize a <strong class="text-slate-200">Compra de Pontos oficial (27 pontos, valores de 8 a 15)</strong> ou role <strong class="text-slate-200">4d6 descartando o menor dado</strong>.
+      </p>
+
+      <!-- Barra de Saldo Point Buy -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-[#0d1017] border border-[#283040] rounded-xl p-3.5 mb-4">
+        <div>
+          <span class="text-xs uppercase tracking-wider text-slate-400">Pontos Restantes (Point Buy):</span>
+          <span id="pb-remaining" class="ml-2 font-fantasy text-xl font-extrabold text-[#d4af37]">27 / 27 pts</span>
+          <p class="text-[11px] text-slate-500 mt-0.5">Tabela de Custo: 8=0 | 9=1 | 10=2 | 11=3 | 12=4 | 13=5 | 14=7 | 15=9</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="resetPointBuyTo8()" class="btn-subtle px-3 py-1.5 text-xs">Zerar (8)</button>
+          <button type="button" onclick="applyStandardArray5e()" class="btn-subtle px-3 py-1.5 text-xs text-amber-300">Padrão (15,14,13,12,10,8)</button>
+          <button type="button" onclick="rollAll4d6DropLowest()" class="btn-gold px-3 py-1.5 text-xs">🎲 Rolar Todos (4d6)</button>
+        </div>
+      </div>
+
+      <!-- Grade dos 6 Atributos -->
+      <div id="generator-abilities-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-5">
+        <!-- Preenchido via JS -->
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2 border-t border-[#283040]">
+        <button type="button" onclick="closeAbilityGenerator()" class="btn-subtle px-4 py-2 text-sm">Cancelar</button>
+        <button type="button" onclick="applyGeneratedAbilities()" class="btn-gold px-5 py-2 text-sm">Aplicar na Ficha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- ÁREA PRINCIPAL                                                        -->
+  <!-- ===================================================================== -->
+  <main class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6">
+
+    <!-- =================================================================== -->
+    <!-- VIEW 1: GALERIA DE FICHAS ("MINHAS FICHAS")                         -->
+    <!-- =================================================================== -->
+    <section id="view-gallery" class="space-y-6">
+      <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
+        <div>
+          <h2 class="font-fantasy text-2xl sm:text-3xl font-bold text-white">Minhas Fichas de Personagem</h2>
+          <p class="text-sm text-slate-400 mt-1">Gerencie seus heróis de Dungeons & Dragons 5ª Edição, filtre por classe ou crie uma ficha do zero.</p>
+        </div>
+
+        <!-- Barra de Busca e Filtros -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="relative flex-1 sm:w-64">
+            <input type="text" id="gallery-search" oninput="renderGallery()" placeholder="Buscar nome, raça, subclasse..." class="input-obsidian w-full pl-9 pr-3 py-2 text-sm" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+
+          <select id="gallery-class-filter" onchange="renderGallery()" class="input-obsidian px-3 py-2 text-sm">
+            <option value="">Todas as Classes (12)</option>
+          </select>
+
+          <select id="gallery-level-filter" onchange="renderGallery()" class="input-obsidian px-3 py-2 text-sm">
+            <option value="">Todos os Níveis (1–20)</option>
+            <option value="1-4">Níveis 1–4</option>
+            <option value="5-10">Níveis 5–10</option>
+            <option value="11-16">Níveis 11–16</option>
+            <option value="17-20">Níveis 17–20</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <!-- Preenchido via JS -->
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 2: EDITOR E VISUALIZADOR DA FICHA D&D 5E                       -->
+    <!-- =================================================================== -->
+    <section id="view-editor" class="hidden space-y-6">
+
+      <!-- 1. CABEÇALHO DE IDENTIDADE -->
+      <div class="card-obsidian p-5 sm:p-6">
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
+
+          <!-- Retrato do Personagem & Inspiração Heroica -->
+          <div class="flex flex-col items-center gap-2 w-full lg:w-auto shrink-0">
+            <div id="char-avatar-preview" class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-gradient-to-br from-[#1f2636] to-[#0b0d11] border-2 border-[#d4af37]/70 flex items-center justify-center text-3xl font-fantasy font-bold text-[#d4af37] overflow-hidden shadow-inner">
+              🛡️
+            </div>
+            <div class="flex flex-wrap justify-center gap-1.5 no-print">
+              <label class="btn-subtle px-2 py-1 text-[11px] cursor-pointer" title="Enviar imagem local">
+                Foto
+                <input type="file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)" />
+              </label>
+              <button type="button" onclick="cyclePresetAvatar()" class="btn-subtle px-2 py-1 text-[11px]" title="Alternar ícone">Ícone</button>
+              <button type="button" onclick="toggleAvatarUrlInput()" class="btn-subtle px-2 py-1 text-[11px]" title="URL de imagem">URL</button>
+            </div>
+            <input type="text" id="field-avatarUrl" oninput="updateCharacterField('avatarUrl', this.value)" placeholder="https://..." class="input-obsidian px-2 py-1 text-xs w-44 hidden no-print" />
+
+            <!-- Toggle de Inspiração Heroica -->
+            <button type="button" id="btn-inspiration" onclick="toggleInspiration()" class="mt-1 px-3 py-1 rounded-full border text-xs font-semibold flex items-center gap-1.5 transition-all bg-[#0d1017] border-[#283040] text-slate-400 hover:border-[#d4af37]/60">
+              <span id="inspiration-star">☆</span>
+              <span>Inspiração</span>
+            </button>
+          </div>
+
+          <!-- Campos de Identidade D&D 5e -->
+          <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 w-full">
+            <div class="sm:col-span-2">
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Nome do Personagem</label>
+              <input type="text" id="field-name" oninput="updateCharacterField('name', this.value)" class="input-obsidian w-full px-3 py-2 font-fantasy text-lg font-bold text-[#d4af37]" placeholder="Ex: Tharion Escudofirme" />
+            </div>
+
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Jogador</label>
+              <input type="text" id="field-player" oninput="updateCharacterField('player', this.value)" class="input-obsidian w-full px-3 py-2 text-sm" placeholder="Nome do jogador" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Nível (1–20)</label>
+                <input type="number" id="field-level" min="1" max="20" oninput="handleLevelChange(this.value)" class="input-obsidian w-full px-2.5 py-2 text-sm font-bold text-center text-white" />
+              </div>
+              <div>
+                <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">XP</label>
+                <input type="number" id="field-xp" min="0" step="50" oninput="updateCharacterField('xp', Number(this.value))" class="input-obsidian w-full px-2.5 py-2 text-sm text-center" />
+              </div>
+            </div>
+
+            <!-- Raça -->
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Raça</label>
+              <select id="field-race" onchange="updateCharacterField('race', this.value)" class="input-obsidian w-full px-3 py-2 text-sm">
+                <option value="Humano">Humano</option>
+                <option value="Elfo">Elfo</option>
+                <option value="Anão">Anão</option>
+                <option value="Halfling">Halfling</option>
+                <option value="Draconato">Draconato</option>
+                <option value="Gnomo">Gnomo</option>
+                <option value="Meio-Elfo">Meio-Elfo</option>
+                <option value="Meio-Orc">Meio-Orc</option>
+                <option value="Tiefling">Tiefling</option>
+              </select>
+            </div>
+
+            <!-- Todas as 12 Classes Padrão do D&D 5e -->
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Classe (12 Padrão 5e)</label>
+              <select id="field-className" onchange="handleClassSelectChange(this.value)" class="input-obsidian w-full px-3 py-2 text-sm font-semibold text-white">
+                <option value="Bárbaro">Bárbaro</option>
+                <option value="Bardo">Bardo</option>
+                <option value="Bruxo">Bruxo</option>
+                <option value="Clérigo">Clérigo</option>
+                <option value="Druida">Druida</option>
+                <option value="Feiticeiro">Feiticeiro</option>
+                <option value="Guerreiro">Guerreiro</option>
+                <option value="Ladino">Ladino</option>
+                <option value="Mago">Mago</option>
+                <option value="Monge">Monge</option>
+                <option value="Patrulheiro">Patrulheiro</option>
+                <option value="Paladino">Paladino</option>
+              </select>
+            </div>
+
+            <!-- Subclasse / Arquétipo -->
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Subclasse / Arquétipo</label>
+              <input type="text" id="field-subclass" oninput="updateCharacterField('subclass', this.value)" class="input-obsidian w-full px-3 py-2 text-sm" placeholder="Ex: Campeão, Mestre de Batalha" />
+            </div>
+
+            <!-- Antecedente -->
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Antecedente</label>
+              <input type="text" id="field-background" list="dnd-backgrounds-list" oninput="updateCharacterField('background', this.value)" class="input-obsidian w-full px-3 py-2 text-sm" placeholder="Ex: Soldado, Acólito, Sábio" />
+              <datalist id="dnd-backgrounds-list">
+                <option value="Acólito"></option>
+                <option value="Artesão de Guilda"></option>
+                <option value="Artista"></option>
+                <option value="Charlatão"></option>
+                <option value="Criminoso"></option>
+                <option value="Eremita"></option>
+                <option value="Forasteiro"></option>
+                <option value="Herói do Povo"></option>
+                <option value="Marinheiro"></option>
+                <option value="Nobre"></option>
+                <option value="Órfão"></option>
+                <option value="Sábio"></option>
+                <option value="Soldado"></option>
+              </datalist>
+            </div>
+
+            <!-- Alinhamento -->
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Alinhamento</label>
+              <select id="field-alignment" onchange="updateCharacterField('alignment', this.value)" class="input-obsidian w-full px-3 py-2 text-sm">
+                <option value="Leal e Bom">Leal e Bom</option>
+                <option value="Neutro e Bom">Neutro e Bom</option>
+                <option value="Caótico e Bom">Caótico e Bom</option>
+                <option value="Leal e Neutro">Leal e Neutro</option>
+                <option value="Neutro">Neutro</option>
+                <option value="Caótico e Neutro">Caótico e Neutro</option>
+                <option value="Leal e Mau">Leal e Mau</option>
+                <option value="Neutro e Mau">Neutro e Mau</option>
+                <option value="Caótico e Mau">Caótico e Mau</option>
+              </select>
+            </div>
+
+            <!-- Dado de Vida -->
+            <div>
+              <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Dado de Vida</label>
+              <select id="field-hitDie" onchange="handleHitDieChange(this.value)" class="input-obsidian w-full px-3 py-2 text-sm font-semibold">
+                <option value="d6">d6 (Mago / Feiticeiro)</option>
+                <option value="d8">d8 (Bardo / Bruxo / Clérigo / Druida / Ladino / Monge)</option>
+                <option value="d10">d10 (Guerreiro / Paladino / Patrulheiro)</option>
+                <option value="d12">d12 (Bárbaro)</option>
+              </select>
+            </div>
+
+            <!-- Resumo da Classe -->
+            <div class="sm:col-span-2 bg-[#0d1017] border border-[#283040] rounded-lg px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div>
+                <span class="text-slate-400">Salvaguardas da Classe:</span>
+                <strong id="class-default-saves" class="ml-1 text-emerald-400">FOR, CON</strong>
+              </div>
+              <div>
+                <span class="text-slate-400">Conjuração:</span>
+                <strong id="class-default-spell" class="ml-1 text-sky-400">Nenhuma</strong>
+              </div>
+              <button type="button" onclick="applyClassDefaults()" class="text-[11px] text-[#d4af37] hover:underline no-print">
+                Sincronizar Regras da Classe
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- GRADE PRINCIPAL: FICHA (8 COLUNAS) + ROLADOR DE DADOS (4 COLUNAS)   -->
+      <!-- =================================================================== -->
+      <div id="sheet-layout-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- COLUNA ESQUERDA (8 COLS) -->
+        <div class="lg:col-span-8 space-y-6">
+
+          <!-- 2. OS 6 ATRIBUTOS (FOR, DES, CON, INT, SAB, CAR) -->
+          <div class="card-obsidian p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-[#283040]">
+              <div>
+                <h3 class="font-fantasy text-lg font-bold text-[#d4af37]">Valores de Atributo</h3>
+                <p class="text-xs text-slate-400">Modificador automático <span class="font-mono text-slate-300">Math.floor((valor - 10) / 2)</span>. Clique no modificador para rolar <span class="text-slate-200 font-medium">1d20 + Mod</span>.</p>
+              </div>
+              <button type="button" onclick="openAbilityGenerator()" class="btn-subtle px-3 py-1.5 text-xs font-semibold text-[#d4af37] hover:border-[#d4af37] no-print">
+                ⚖️ Point Buy (27 pts) / 4d6
+              </button>
+            </div>
+
+            <div id="abilities-6-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+
+          <!-- 3. COMBATE, VITALIDADE, DESCANSO CURTO/LONGO & DEATH SAVES -->
+          <div class="card-obsidian p-5 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#283040]">
+              <div>
+                <h3 class="font-fantasy text-lg font-bold text-[#d4af37]">Combate, Vitalidade & Descansos</h3>
+                <p class="text-xs text-slate-400">Proficiência, CA, Iniciativa, Pontos de Vida, Dados de Vida, Descanso Curto/Longo e Testes contra a Morte.</p>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer no-print">
+                <input type="checkbox" id="field-autoCalcCombat" onchange="toggleAutoCalcCombat(this.checked)" class="w-4 h-4 accent-[#d4af37] rounded" />
+                <span>Cálculo Automático (CA e PV Máx.)</span>
+              </label>
+            </div>
+
+            <!-- Linha 1: Proficiência, CA, Iniciativa, Deslocamento -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+              <!-- Bônus de Proficiência -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 text-center flex flex-col justify-between">
+                <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Proficiência</span>
+                <div id="combat-prof-display" class="my-2 py-1 font-fantasy text-2xl font-extrabold text-sky-400">+2</div>
+                <span id="combat-level-display" class="text-[10px] text-slate-500">Nível 3</span>
+              </div>
+
+              <!-- Classe de Armadura (CA) -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 text-center flex flex-col justify-between">
+                <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Classe de Armadura</span>
+                <input type="number" id="field-ac" oninput="updateCharacterField('ac', Number(this.value))" class="input-obsidian w-20 mx-auto my-2 py-1 text-center font-fantasy text-2xl font-extrabold text-[#d4af37]" />
+                <span id="ac-formula-hint" class="text-[10px] text-slate-500 leading-tight">Armadura + DES + Escudo</span>
+              </div>
+
+              <!-- Iniciativa -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 text-center flex flex-col justify-between">
+                <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Iniciativa</span>
+                <button type="button" onclick="rollInitiative()" id="btn-roll-initiative" class="my-1.5 py-1 px-2 rounded-lg bg-[#131720] hover:bg-[#d4af37] hover:text-[#0b0d11] font-fantasy text-2xl font-extrabold text-white transition-all">
+                  +0
+                </button>
+                <div class="flex items-center justify-center gap-1 text-[10px] text-slate-400 no-print">
+                  <span>Bônus:</span>
+                  <input type="number" id="field-initMisc" oninput="updateCharacterField('initMisc', Number(this.value)); renderCombatStats()" class="input-obsidian w-11 px-1 py-0.5 text-center text-[11px]" />
+                </div>
+              </div>
+
+              <!-- Deslocamento -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 text-center flex flex-col justify-between">
+                <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Deslocamento</span>
+                <input type="text" id="field-speed" oninput="updateCharacterField('speed', this.value)" class="input-obsidian w-24 mx-auto my-2 py-1 text-center font-bold text-lg text-white" placeholder="9m (30 ft)" />
+                <span class="text-[10px] text-slate-500">Caminhada</span>
+              </div>
+            </div>
+
+            <!-- Linha 2: Pontos de Vida + Controles Rápidos -->
+            <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-4 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Pontos de Vida (PV)</span>
+                  <span id="hp-formula-hint" class="ml-2 text-[11px] text-slate-500"></span>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 no-print">
+                  <button type="button" onclick="adjustHP(-5)" class="px-2 py-1 rounded bg-red-950/70 hover:bg-red-900 border border-red-800/50 text-xs font-bold text-red-200">-5</button>
+                  <button type="button" onclick="adjustHP(-1)" class="px-2 py-1 rounded bg-red-950/70 hover:bg-red-900 border border-red-800/50 text-xs font-bold text-red-200">-1</button>
+                  <button type="button" onclick="adjustHP(1)" class="px-2 py-1 rounded bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-800/50 text-xs font-bold text-emerald-200">+1</button>
+                  <button type="button" onclick="adjustHP(5)" class="px-2 py-1 rounded bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-800/50 text-xs font-bold text-emerald-200">+5</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[10px] uppercase text-slate-400 mb-1">PV Atual</label>
+                  <input type="number" id="field-hpCurrent" oninput="handleCurrentHPInput(Number(this.value))" class="input-obsidian w-full px-3 py-1.5 text-lg font-extrabold text-center text-white" />
+                </div>
+                <div>
+                  <label class="block text-[10px] uppercase text-slate-400 mb-1">PV Máximo</label>
+                  <input type="number" id="field-hpMax" oninput="updateCharacterField('hpMax', Number(this.value)); renderCombatStats()" class="input-obsidian w-full px-3 py-1.5 text-lg font-bold text-center text-slate-200" />
+                </div>
+                <div>
+                  <label class="block text-[10px] uppercase text-slate-400 mb-1">PV Temporário</label>
+                  <input type="number" id="field-hpTemp" min="0" oninput="updateCharacterField('hpTemp', Number(this.value))" class="input-obsidian w-full px-3 py-1.5 text-lg font-bold text-center text-sky-400" />
+                </div>
+              </div>
+
+              <div class="w-full h-2.5 bg-[#131720] rounded-full overflow-hidden">
+                <div id="hp-progress-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <!-- Linha 3: Dados de Vida + Descanso Curto/Longo E Testes contra a Morte (Death Saves) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <!-- Bloco A: Dados de Vida & Descanso Curto / Longo -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-4 flex flex-col justify-between space-y-3">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-300">Dados de Vida & Descansos</span>
+                    <span id="hit-dice-die-badge" class="text-xs font-fantasy font-bold px-2 py-0.5 rounded bg-[#131720] border border-[#283040] text-[#d4af37]">3d10</span>
+                  </div>
+                  <div class="flex items-center justify-between bg-[#131720] border border-[#283040]/80 rounded-lg px-3 py-2">
+                    <span class="text-xs text-slate-300">Disponíveis / Máximo:</span>
+                    <div class="flex items-center gap-1.5">
+                      <input type="number" id="field-hitDiceCurrent" min="0" max="20" oninput="updateHitDiceCurrent(Number(this.value))" class="input-obsidian w-12 py-0.5 text-center text-sm font-bold text-[#d4af37]" />
+                      <span class="text-slate-500 text-xs">/</span>
+                      <span id="hit-dice-max-display" class="text-sm font-bold text-slate-200">3</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 no-print">
+                  <button type="button" onclick="takeShortRest()" title="Gasta 1 Dado de Vida e recupera 1d[Classe] + CON (mínimo 1 PV)" class="btn-subtle py-2 px-2.5 text-xs font-semibold text-amber-300 hover:border-amber-400/60 flex items-center justify-center gap-1.5">
+                    <span>⛺ Descanso Curto</span>
+                  </button>
+                  <button type="button" onclick="takeLongRest()" title="Restaura PV ao máximo, metade dos Dados de Vida gastos, espaços de magia e zera Testes contra a Morte" class="btn-gold py-2 px-2.5 text-xs flex items-center justify-center gap-1.5">
+                    <span>🏕️ Descanso Longo</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bloco B: Testes contra a Morte (Death Saves) -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-4 flex flex-col justify-between space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Testes contra a Morte</span>
+                    <p class="text-[10px] text-slate-400">3 Sucessos = Estabiliza • 3 Falhas = Morte</p>
+                  </div>
+                  <div class="flex items-center gap-1.5 no-print">
+                    <button type="button" onclick="rollDeathSave()" title="Rola 1d20 seguindo as regras oficiais de D&D 5e" class="btn-subtle px-2.5 py-1 text-xs font-semibold text-rose-300 hover:border-rose-400/60">
+                      🎲 Rolar 1d20
+                    </button>
+                    <button type="button" onclick="resetDeathSaves()" title="Zerar marcadores" class="text-[11px] text-slate-400 hover:text-white px-1.5 py-1">
+                      Zerar
+                    </button>
+                  </div>
+                </div>
+
+                <div class="space-y-2 bg-[#131720] border border-[#283040]/80 rounded-lg p-3">
+                  <!-- Sucessos -->
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-emerald-400">Sucessos</span>
+                    <div id="death-saves-successes" class="flex items-center gap-2.5">
+                      <!-- 3 círculos preenchidos via JS -->
+                    </div>
+                  </div>
+                  <!-- Falhas -->
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-rose-400">Falhas</span>
+                    <div id="death-saves-failures" class="flex items-center gap-2.5">
+                      <!-- 3 círculos preenchidos via JS -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 4. NAVEGAÇÃO POR ABAS DA FICHA -->
+          <div class="card-obsidian p-5 space-y-5">
+            <div class="flex flex-wrap items-center gap-2 pb-3 border-b border-[#283040] no-print">
+              <button type="button" id="sheet-tab-skills" onclick="switchSheetTab('skills')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold bg-[#d4af37] text-[#0b0d11] transition">
+                Salvaguardas & Perícias (18)
+              </button>
+              <button type="button" id="sheet-tab-spells" onclick="switchSheetTab('spells')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-[#0d1017] text-slate-300 hover:text-white border border-[#283040] transition">
+                Conjuração & Magias
+              </button>
+              <button type="button" id="sheet-tab-equipment" onclick="switchSheetTab('equipment')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-[#0d1017] text-slate-300 hover:text-white border border-[#283040] transition">
+                Equipamentos & Moedas
+              </button>
+              <button type="button" id="sheet-tab-lore" onclick="switchSheetTab('lore')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-[#0d1017] text-slate-300 hover:text-white border border-[#283040] transition">
+                Características & História
+              </button>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- ABA A: SALVAGUARDAS & AS 18 PERÍCIAS OFICIAIS D&D 5E          -->
+            <!-- ============================================================= -->
+            <div id="panel-skills" class="print-show-all space-y-5">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+                <!-- Testes de Resistência (Salvaguardas) -->
+                <div class="md:col-span-5 bg-[#0d1017] border border-[#283040] rounded-xl p-4 space-y-3">
+                  <div class="pb-2 border-b border-[#283040]">
+                    <h4 class="font-fantasy text-base font-bold text-[#d4af37]">Testes de Resistência</h4>
+                    <p class="text-[11px] text-slate-400">Salvaguardas com proficiência somam <span id="save-prof-hint" class="text-[#d4af37] font-semibold">+2</span>.</p>
+                  </div>
+                  <div id="saving-throws-list" class="space-y-2">
+                    <!-- Preenchido via JS -->
+                  </div>
+
+                  <div class="pt-3 border-t border-[#283040] space-y-1.5">
+                    <div class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Sentidos Passivos</div>
+                    <div id="passive-scores-box" class="space-y-1.5 text-xs">
+                      <!-- Preenchido via JS -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 18 Perícias Oficiais D&D 5e -->
+                <div class="md:col-span-7 bg-[#0d1017] border border-[#283040] rounded-xl p-4 space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#283040]">
+                    <div>
+                      <h4 class="font-fantasy text-base font-bold text-[#d4af37]">Perícias Oficiais (18)</h4>
+                      <p class="text-[11px] text-slate-400"><strong class="text-[#d4af37]">Prof</strong> = +Proficiência • <strong class="text-amber-300">Esp</strong> = Especialista (2× Prof.)</p>
+                    </div>
+                  </div>
+                  <div id="skills-5e-list" class="space-y-1.5 max-h-[680px] overflow-y-auto pr-1">
+                    <!-- Preenchido via JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- ABA B: CONJURAÇÃO (CD, ATAQUE MÁGICO, SLOTS & MAGIAS)         -->
+            <!-- ============================================================= -->
+            <div id="panel-spells" class="hidden print-show-all space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 bg-[#0d1017] border border-[#283040] rounded-xl p-4">
+                <div>
+                  <label class="block text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Atributo Conjurador</label>
+                  <select id="field-spellAbility" onchange="updateCharacterField('spellAbility', this.value); renderSpellcasting()" class="input-obsidian px-3 py-1.5 text-sm font-semibold text-white">
+                    <option value="NONE">Nenhum (Não Conjurador)</option>
+                    <option value="INT">Inteligência (INT)</option>
+                    <option value="SAB">Sabedoria (SAB)</option>
+                    <option value="CAR">Carisma (CAR)</option>
+                  </select>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                  <div class="bg-[#131720] border border-[#283040] rounded-lg px-4 py-2 text-center">
+                    <div class="text-[10px] uppercase text-slate-400">CD de Resistência</div>
+                    <div id="spell-save-dc" class="font-fantasy text-xl font-extrabold text-[#d4af37]">10</div>
+                  </div>
+                  <div class="bg-[#131720] border border-[#283040] rounded-lg px-4 py-2 text-center">
+                    <div class="text-[10px] uppercase text-slate-400">Ataque Mágico</div>
+                    <button type="button" onclick="rollSpellAttack()" id="spell-attack-bonus-btn" class="font-fantasy text-xl font-extrabold text-sky-400 hover:underline">+2</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Espaços de Magia (Slots por Círculo 1º ao 9º) -->
+              <div>
+                <div class="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-2">Espaços de Magia (Atuais / Máximos por Círculo)</div>
+                <div id="spell-slots-grid" class="grid grid-cols-3 sm:grid-cols-9 gap-2">
+                  <!-- Preenchido via JS -->
+                </div>
+              </div>
+
+              <!-- Lista de Truques e Magias Preparadas -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-fantasy text-base font-bold text-sky-400">Truques & Magias Preparadas</h4>
+                  <button type="button" onclick="addSpell()" class="btn-gold px-3 py-1.5 text-xs no-print">+ Adicionar Magia</button>
+                </div>
+                <div id="spells-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <!-- Preenchido via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- ABA C: EQUIPAMENTOS, MOEDAS & INVENTÁRIO (CARGA = FOR * 15 LB)-->
+            <!-- ============================================================= -->
+            <div id="panel-equipment" class="hidden print-show-all space-y-5">
+              <!-- Barra de Capacidade de Carga -->
+              <div class="flex flex-wrap items-center justify-between gap-3 bg-[#0d1017] border border-[#283040] rounded-xl p-4">
+                <div>
+                  <h4 class="font-fantasy text-base font-bold text-[#d4af37]">Inventário & Equipamentos</h4>
+                  <p class="text-xs text-slate-400">Armaduras e Escudos marcados como <strong class="text-slate-200">Equipados</strong> recalculam a CA automaticamente.</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-slate-300">
+                    Carga Atual: <strong id="inv-weight-current" class="text-white">0.0</strong> / <strong id="inv-weight-max" class="text-[#d4af37]">150.0</strong> lb
+                  </div>
+                  <div id="inv-weight-breakdown" class="text-[10px] text-slate-400 mt-0.5">Itens: 0.0 lb + Moedas: 0.0 lb</div>
+                  <div class="w-44 h-2.5 bg-[#131720] rounded-full overflow-hidden mt-1.5 ml-auto">
+                    <div id="inv-weight-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bolsa de Moedas Oficial D&D 5e (PC, PP, PE, PO, PL) -->
+              <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-[#d4af37]">Bolsa de Moedas (D&D 5e)</span>
+                  <div class="text-xs text-slate-300">
+                    Riqueza Total: <strong id="coins-total-gp" class="text-[#d4af37]">0.00 PO</strong>
+                    <span class="text-slate-500 ml-2">(<span id="coins-weight-lb">0.0</span> lb • 50 moedas = 1 lb)</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-5 gap-2 sm:gap-3">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase text-amber-700 text-center mb-1">PC (Cobre)</label>
+                    <input type="number" id="coin-cp" min="0" oninput="updateCoin('cp', Number(this.value))" class="input-obsidian w-full py-1.5 text-center text-sm font-bold" />
+                    <div class="text-[9px] text-slate-500 text-center mt-0.5">1/100 PO</div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-300 text-center mb-1">PP (Prata)</label>
+                    <input type="number" id="coin-sp" min="0" oninput="updateCoin('sp', Number(this.value))" class="input-obsidian w-full py-1.5 text-center text-sm font-bold" />
+                    <div class="text-[9px] text-slate-500 text-center mt-0.5">1/10 PO</div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase text-sky-400 text-center mb-1">PE (Electro)</label>
+                    <input type="number" id="coin-ep" min="0" oninput="updateCoin('ep', Number(this.value))" class="input-obsidian w-full py-1.5 text-center text-sm font-bold" />
+                    <div class="text-[9px] text-slate-500 text-center mt-0.5">1/2 PO</div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase text-[#d4af37] text-center mb-1">PO (Ouro)</label>
+                    <input type="number" id="coin-gp" min="0" oninput="updateCoin('gp', Number(this.value))" class="input-obsidian w-full py-1.5 text-center text-sm font-bold text-[#d4af37]" />
+                    <div class="text-[9px] text-slate-500 text-center mt-0.5">1 PO</div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase text-purple-300 text-center mb-1">PL (Platina)</label>
+                    <input type="number" id="coin-pp" min="0" oninput="updateCoin('pp', Number(this.value))" class="input-obsidian w-full py-1.5 text-center text-sm font-bold" />
+                    <div class="text-[9px] text-slate-500 text-center mt-0.5">10 PO</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Formulário para Adicionar Item -->
+              <form onsubmit="addEquipmentItem(event)" class="bg-[#0d1017] border border-[#283040] rounded-xl p-3.5 space-y-3 no-print">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Adicionar Novo Item</div>
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                  <input type="text" id="eq-name" required placeholder="Nome (ex: Cota de Malha, Espada Longa)" class="input-obsidian sm:col-span-4 px-3 py-1.5 text-sm" />
+                  <select id="eq-type" onchange="handleNewItemTypeChange(this.value)" class="input-obsidian sm:col-span-3 px-2.5 py-1.5 text-sm">
+                    <option value="Arma">Arma</option>
+                    <option value="Armadura">Armadura</option>
+                    <option value="Escudo">Escudo</option>
+                    <option value="Item">Item</option>
+                  </select>
+                  <input type="number" id="eq-qty" min="1" value="1" title="Quantidade" placeholder="Qtd" class="input-obsidian sm:col-span-2 px-2 py-1.5 text-sm text-center" />
+                  <input type="number" id="eq-weight" min="0" step="0.1" value="3" title="Peso unitário (lb)" placeholder="Peso lb" class="input-obsidian sm:col-span-2 px-2 py-1.5 text-sm text-center" />
+                  <button type="submit" class="btn-gold sm:col-span-1 py-1.5 text-sm font-bold" title="Adicionar">+</button>
+                </div>
+
+                <!-- Campos extras para Armadura/Escudo ou Arma -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                  <div id="eq-armor-fields" class="hidden sm:col-span-6 grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] text-slate-400 mb-0.5">CA Base / Bônus</label>
+                      <input type="number" id="eq-acBase" value="14" class="input-obsidian w-full px-2 py-1 text-xs text-center" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] text-slate-400 mb-0.5">Categoria Armadura</label>
+                      <select id="eq-armorCategory" class="input-obsidian w-full px-2 py-1 text-xs">
+                        <option value="leve">Leve (+DES total)</option>
+                        <option value="media" selected>Média (+DES máx. 2)</option>
+                        <option value="pesada">Pesada (sem DES)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="eq-weapon-fields" class="sm:col-span-6">
+                    <label class="block text-[10px] text-slate-400 mb-0.5">Dano / Propriedades</label>
+                    <input type="text" id="eq-damage" placeholder="Ex: 1d8 cortante (Versátil 1d10)" class="input-obsidian w-full px-2.5 py-1 text-xs" />
+                  </div>
+                  <div class="sm:col-span-6">
+                    <label class="block text-[10px] text-slate-400 mb-0.5">Observações</label>
+                    <input type="text" id="eq-notes" placeholder="Notas opcionais..." class="input-obsidian w-full px-2.5 py-1 text-xs" />
+                  </div>
+                </div>
+              </form>
+
+              <!-- Tabela de Itens -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr class="border-b border-[#283040] text-[11px] uppercase text-slate-400">
+                      <th class="py-2 px-2">Equip.</th>
+                      <th class="py-2 px-2">Item</th>
+                      <th class="py-2 px-2">Tipo</th>
+                      <th class="py-2 px-2">Detalhes</th>
+                      <th class="py-2 px-2 text-center">Qtd</th>
+                      <th class="py-2 px-2 text-right">Peso (lb)</th>
+                      <th class="py-2 px-2 text-right no-print"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="equipment-tbody" class="divide-y divide-[#283040]/60">
+                    <!-- Preenchido via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- ABA D: CARACTERÍSTICAS & HISTÓRIA                             -->
+            <!-- ============================================================= -->
+            <div id="panel-lore" class="hidden print-show-all space-y-5">
+              <!-- Traços de Personalidade, Ideais, Vínculos, Defeitos -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Traços de Personalidade</label>
+                  <textarea id="field-traits" rows="3" oninput="updateCharacterField('traits', this.value)" class="input-obsidian w-full p-2.5 text-sm" placeholder="Maneirismos, postura e hábitos..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Ideais</label>
+                  <textarea id="field-ideals" rows="3" oninput="updateCharacterField('ideals', this.value)" class="input-obsidian w-full p-2.5 text-sm" placeholder="Princípios que guiam suas escolhas..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Vínculos</label>
+                  <textarea id="field-bonds" rows="3" oninput="updateCharacterField('bonds', this.value)" class="input-obsidian w-full p-2.5 text-sm" placeholder="Pessoas, locais ou promessas importantes..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Defeitos</label>
+                  <textarea id="field-flaws" rows="3" oninput="updateCharacterField('flaws', this.value)" class="input-obsidian w-full p-2.5 text-sm" placeholder="Fraquezas, medos ou falhas de caráter..."></textarea>
+                </div>
+              </div>
+
+              <!-- Talentos e Habilidades de Classe -->
+              <div class="space-y-3 pt-3 border-t border-[#283040]">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-fantasy text-base font-bold text-[#d4af37]">Talentos & Habilidades de Classe / Raça</h4>
+                  <button type="button" onclick="addFeature()" class="btn-subtle px-3 py-1.5 text-xs font-semibold text-[#d4af37] no-print">+ Adicionar Habilidade</button>
+                </div>
+                <div id="features-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <!-- Preenchido via JS -->
+                </div>
+              </div>
+
+              <!-- História / Backstory -->
+              <div class="pt-3 border-t border-[#283040]">
+                <label class="block text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">História do Personagem (Backstory)</label>
+                <textarea id="field-backstory" rows="5" oninput="updateCharacterField('backstory', this.value)" class="input-obsidian w-full p-3 text-sm" placeholder="Origem, passado e motivação para se aventurar..."></textarea>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- COLUNA DIREITA (4 COLS): ROLADOR DE DADOS INTEGRADO D&D 5E        -->
+        <!-- ================================================================= -->
+        <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-20 no-print">
+          <div class="card-obsidian p-5 border-[#d4af37]/35">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-fantasy text-lg font-bold text-[#d4af37]">🎲 Rolador de Dados D&D 5e</h3>
+              <button type="button" onclick="clearDiceLog()" class="text-xs text-slate-400 hover:text-white">Limpar</button>
+            </div>
+
+            <!-- Seletor Normal / Vantagem / Desvantagem -->
+            <div class="grid grid-cols-3 gap-1.5 bg-[#0d1017] border border-[#283040] p-1 rounded-lg mb-4">
+              <button type="button" id="adv-btn-dis" onclick="setAdvantageMode('disadvantage')" class="py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-rose-300 transition">
+                Desvantagem
+              </button>
+              <button type="button" id="adv-btn-norm" onclick="setAdvantageMode('normal')" class="py-1.5 rounded-md text-xs font-bold bg-[#d4af37] text-[#0b0d11] transition">
+                Normal
+              </button>
+              <button type="button" id="adv-btn-adv" onclick="setAdvantageMode('advantage')" class="py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-emerald-300 transition">
+                Vantagem
+              </button>
+            </div>
+
+            <!-- Visor Principal -->
+            <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-4 text-center mb-4">
+              <div id="dice-roll-label" class="text-xs uppercase tracking-wider text-slate-400 mb-1">Aguardando rolagem</div>
+              <div id="dice-roll-total" class="font-fantasy text-4xl font-extrabold text-white my-1">—</div>
+              <div id="dice-roll-detail" class="text-xs text-slate-400 break-words">Clique em qualquer atributo, perícia, salvaguarda ou dado</div>
+            </div>
+
+            <!-- Botões Rápidos de Dados -->
+            <div class="grid grid-cols-4 gap-2 mb-3">
+              <button type="button" onclick="rollQuickDie(4)" class="btn-subtle py-2 text-xs font-bold hover:border-[#d4af37]">d4</button>
+              <button type="button" onclick="rollQuickDie(6)" class="btn-subtle py-2 text-xs font-bold hover:border-[#d4af37]">d6</button>
+              <button type="button" onclick="rollQuickDie(8)" class="btn-subtle py-2 text-xs font-bold hover:border-[#d4af37]">d8</button>
+              <button type="button" onclick="rollQuickDie(10)" class="btn-subtle py-2 text-xs font-bold hover:border-[#d4af37]">d10</button>
+              <button type="button" onclick="rollQuickDie(12)" class="btn-subtle py-2 text-xs font-bold hover:border-[#d4af37]">d12</button>
+              <button type="button" onclick="rollQuickDie(20)" class="btn-gold py-2 text-xs font-extrabold">d20</button>
+              <button type="button" onclick="rollQuickDie(100)" class="btn-subtle py-2 text-xs font-bold hover:border-[#d4af37]">d100</button>
+              <button type="button" onclick="roll4d6DropLowestSingle()" class="btn-subtle py-2 text-xs font-bold text-amber-300 hover:border-[#d4af37]" title="Rola 4d6 e descarta o menor">4d6-L</button>
+            </div>
+
+            <!-- Expressão Customizada -->
+            <form onsubmit="handleCustomDiceSubmit(event)" class="flex gap-2 mb-4">
+              <input type="text" id="custom-dice-expr" placeholder="Ex: 1d20+5, 2d6+3, 8d6" class="input-obsidian flex-1 px-3 py-2 text-xs font-mono" />
+              <button type="submit" class="btn-gold px-4 py-2 text-xs font-bold">Rolar</button>
+            </form>
+
+            <!-- Histórico -->
+            <div>
+              <div class="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-2">Histórico de Rolagens</div>
+              <div id="dice-log" class="space-y-1.5 max-h-64 overflow-y-auto pr-1 text-xs">
+                <p class="text-slate-500 italic text-center py-4">Nenhuma rolagem registrada ainda.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ações da Ficha -->
+          <div class="card-obsidian p-4 flex flex-col gap-2">
+            <button type="button" onclick="manualSave()" class="btn-gold w-full py-2.5 text-sm">
+              Salvar Ficha
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="duplicateCurrentCharacter()" class="btn-subtle py-2 text-xs font-medium">
+                Duplicar Ficha
+              </button>
+              <button type="button" onclick="switchView('gallery')" class="btn-subtle py-2 text-xs font-medium">
+                Minhas Fichas
+              </button>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // CONSTANTES E REGRAS OFICIAIS D&D 5ª EDIÇÃO
+    // =========================================================================
+    const STORAGE_KEY = 'dnd5e_fichas_v4';
+
+    const ABILITY_DEFS = [
+      { key: 'FOR', label: 'Força' },
+      { key: 'DES', label: 'Destreza' },
+      { key: 'CON', label: 'Constituição' },
+      { key: 'INT', label: 'Inteligência' },
+      { key: 'SAB', label: 'Sabedoria' },
+      { key: 'CAR', label: 'Carisma' }
+    ];
+
+    // Todas as 12 classes padrão do D&D 5e
+    const CLASSES_5E = {
+      'Bárbaro': { hitDie: 'd12', saves: ['FOR', 'CON'], spellAbility: 'NONE' },
+      'Bardo': { hitDie: 'd8', saves: ['DES', 'CAR'], spellAbility: 'CAR' },
+      'Bruxo': { hitDie: 'd8', saves: ['SAB', 'CAR'], spellAbility: 'CAR' },
+      'Clérigo': { hitDie: 'd8', saves: ['SAB', 'CAR'], spellAbility: 'SAB' },
+      'Druida': { hitDie: 'd8', saves: ['INT', 'SAB'], spellAbility: 'SAB' },
+      'Feiticeiro': { hitDie: 'd6', saves: ['CON', 'CAR'], spellAbility: 'CAR' },
+      'Guerreiro': { hitDie: 'd10', saves: ['FOR', 'CON'], spellAbility: 'NONE' },
+      'Ladino': { hitDie: 'd8', saves: ['DES', 'INT'], spellAbility: 'INT' },
+      'Mago': { hitDie: 'd6', saves: ['INT', 'SAB'], spellAbility: 'INT' },
+      'Monge': { hitDie: 'd8', saves: ['FOR', 'DES'], spellAbility: 'SAB' },
+      'Patrulheiro': { hitDie: 'd10', saves: ['FOR', 'DES'], spellAbility: 'SAB' },
+      'Paladino': { hitDie: 'd10', saves: ['SAB', 'CAR'], spellAbility: 'CAR' }
+    };
+
+    // Todas as 18 perícias oficiais do D&D 5e
+    const SKILLS_5E = [
+      { id: 'acrobacia', name: 'Acrobacia', ability: 'DES' },
+      { id: 'adestrar_animais', name: 'Adestrar Animais', ability: 'SAB' },
+      { id: 'arcanismo', name: 'Arcanismo', ability: 'INT' },
+      { id: 'atletismo', name: 'Atletismo', ability: 'FOR' },
+      { id: 'atuacao', name: 'Atuação', ability: 'CAR' },
+      { id: 'enganacao', name: 'Enganação', ability: 'CAR' },
+      { id: 'furtividade', name: 'Furtividade', ability: 'DES' },
+      { id: 'historia', name: 'História', ability: 'INT' },
+      { id: 'intimidacao', name: 'Intimidação', ability: 'CAR' },
+      { id: 'intuicao', name: 'Intuição', ability: 'SAB' },
+      { id: 'investigacao', name: 'Investigação', ability: 'INT' },
+      { id: 'medicina', name: 'Medicina', ability: 'SAB' },
+      { id: 'natureza', name: 'Natureza', ability: 'INT' },
+      { id: 'percepcao', name: 'Percepção', ability: 'SAB' },
+      { id: 'persuasao', name: 'Persuasão', ability: 'CAR' },
+      { id: 'prestidigitacao', name: 'Prestidigitação', ability: 'DES' },
+      { id: 'religiao', name: 'Religião', ability: 'INT' },
+      { id: 'sobrevivencia', name: 'Sobrevivência', ability: 'SAB' }
+    ];
+
+    // Tabela oficial de Point Buy (27 pontos, valores de 8 a 15)
+    const POINT_BUY_COSTS = {
+      8: 0,
+      9: 1,
+      10: 2,
+      11: 3,
+      12: 4,
+      13: 5,
+      14: 7,
+      15: 9
+    };
+
+    const PRESET_ICONS = ['🛡️', '⚔️', '🗡️', '🔮', '🏹', '📜'];
+
+    // =========================================================================
+    // ESTADO GLOBAL
+    // =========================================================================
+    let characters = [];
+    let currentCharId = null;
+    let advantageMode = 'normal'; // 'normal' | 'advantage' | 'disadvantage'
+    let diceHistory = [];
+    let genDraftAbilities = null;
+
+    // =========================================================================
+    // CÁLCULOS DE REGRAS D&D 5E
+    // =========================================================================
+    function getProficiencyBonus(level) {
+      const lv = Math.min(20, Math.max(1, Number(level) || 1));
+      return Math.ceil(lv / 4) + 1;
+    }
+
+    function getAbilityModifier(score) {
+      return Math.floor(((Number(score) || 10) - 10) / 2);
+    }
+
+    function formatSigned(n) {
+      const num = Number(n) || 0;
+      return num >= 0 ? `+${num}` : `${num}`;
+    }
+
+    function getHitDieSides(hitDieStr) {
+      const n = parseInt(String(hitDieStr || 'd10').replace(/\D/g, ''), 10);
+      return [6, 8, 10, 12].includes(n) ? n : 10;
+    }
+
+    // PV Máximos: Nível 1 = dado máximo + CON; Níveis seguintes = média arredondada para cima + CON
+    function calculateAutoMaxHP(char) {
+      const level = Math.min(20, Math.max(1, Number(char.level) || 1));
+      const dieSides = getHitDieSides(char.hitDie);
+      const conMod = getAbilityModifier(char.abilities?.CON ?? 10);
+      const avgPerLevel = (dieSides / 2) + 1;
+      return Math.max(1, dieSides + (level - 1) * avgPerLevel + (conMod * level));
+    }
+
+    // CA calculada com base na armadura equipada + DES (respeitando limite de média/pesada) + escudo
+    function calculateAutoAC(char) {
+      const dexMod = getAbilityModifier(char.abilities?.DES ?? 10);
+      const equippedItems = (char.equipment || []).filter(item => item.equipped);
+
+      const equippedArmor = equippedItems.find(item => item.type === 'Armadura');
+      const shieldBonus = equippedItems
+        .filter(item => item.type === 'Escudo')
+        .reduce((sum, sh) => sum + (Number(sh.acBonus) || 2), 0);
+
+      let baseAC = 10 + dexMod;
+      if (equippedArmor) {
+        const armorBase = Number(equippedArmor.acBase) || 11;
+        const cat = equippedArmor.armorCategory || 'leve';
+        if (cat === 'leve') {
+          baseAC = armorBase + dexMod;
+        } else if (cat === 'media') {
+          baseAC = armorBase + Math.min(2, dexMod);
+        } else {
+          baseAC = armorBase;
+        }
+      }
+
+      return baseAC + shieldBonus;
+    }
+
+    function getSavingThrowBonus(char, abilityKey) {
+      const baseMod = getAbilityModifier(char.abilities?.[abilityKey] ?? 10);
+      const prof = char.savingThrows?.[abilityKey] ? getProficiencyBonus(char.level) : 0;
+      return baseMod + prof;
+    }
+
+    function getSkillBonus(char, skill) {
+      const baseMod = getAbilityModifier(char.abilities?.[skill.ability] ?? 10);
+      const profBonus = getProficiencyBonus(char.level);
+      const st = char.skills?.[skill.id] || { prof: false, exp: false };
+      let profAdd = 0;
+      if (st.exp) profAdd = profBonus * 2;
+      else if (st.prof) profAdd = profBonus;
+      return baseMod + profAdd;
+    }
+
+    // =========================================================================
+    // APENAS 1 FICHA PRÉ-PRONTA INICIAL: THARION ESCUDOFIRME
+    // =========================================================================
+    function createEmptySpellSlots() {
+      const slots = {};
+      for (let i = 1; i <= 9; i++) {
+        slots[i] = { current: 0, max: 0 };
+      }
+      return slots;
+    }
+
+    function getInitialPresetCharacter() {
+      const skillsObj = {};
+      SKILLS_5E.forEach(s => {
+        skillsObj[s.id] = { prof: false, exp: false };
+      });
+      skillsObj.atletismo = { prof: true, exp: false };
+      skillsObj.intimidacao = { prof: true, exp: false };
+      skillsObj.percepcao = { prof: true, exp: false };
+      skillsObj.sobrevivencia = { prof: true, exp: false };
+
+      return [
+        {
+          id: 'tharion-escudofirme-5e',
+          name: 'Tharion Escudofirme',
+          player: 'Jogador 1',
+          race: 'Humano',
+          className: 'Guerreiro',
+          subclass: 'Mestre de Batalha',
+          hitDie: 'd10',
+          spellAbility: 'NONE',
+          level: 3,
+          background: 'Soldado',
+          alignment: 'Leal e Bom',
+          xp: 900,
+          inspiration: false,
+          avatarUrl: '',
+          presetIcon: '🛡️',
+          autoCalcCombat: true,
+          abilities: { FOR: 16, DES: 14, CON: 15, INT: 10, SAB: 12, CAR: 11 },
+          ac: 18,
+          initMisc: 0,
+          speed: '9m (30 ft)',
+          hpCurrent: 28,
+          hpMax: 28,
+          hpTemp: 0,
+          hitDiceCurrent: 3,
+          deathSaves: { successes: 0, failures: 0 },
+          savingThrows: { FOR: true, DES: false, CON: true, INT: false, SAB: false, CAR: false },
+          skills: skillsObj,
+          spellSlots: createEmptySpellSlots(),
+          spells: [],
+          coins: { cp: 20, sp: 45, ep: 0, gp: 85, pp: 0 },
+          equipment: [
+            {
+              id: 'eq-th-1',
+              name: 'Cota de Malha',
+              type: 'Armadura',
+              armorCategory: 'pesada',
+              acBase: 16,
+              acBonus: 0,
+              damage: '',
+              notes: 'Armadura pesada (Desvantagem em Furtividade)',
+              qty: 1,
+              weight: 55,
+              equipped: true
+            },
+            {
+              id: 'eq-th-2',
+              name: 'Escudo de Aço',
+              type: 'Escudo',
+              armorCategory: '',
+              acBase: 0,
+              acBonus: 2,
+              damage: '',
+              notes: '+2 na Classe de Armadura',
+              qty: 1,
+              weight: 6,
+              equipped: true
+            },
+            {
+              id: 'eq-th-3',
+              name: 'Espada Longa',
+              type: 'Arma',
+              armorCategory: '',
+              acBase: 0,
+              acBonus: 0,
+              damage: '1d8+3 cortante (Versátil 1d10+3)',
+              notes: 'Arma marcial corpo a corpo',
+              qty: 1,
+              weight: 3,
+              equipped: true
+            },
+            {
+              id: 'eq-th-4',
+              name: 'Mochila de Explorador',
+              type: 'Item',
+              armorCategory: '',
+              acBase: 0,
+              acBonus: 0,
+              damage: '',
+              notes: 'Rações (10 dias), cantil, corda 15m e tochas',
+              qty: 1,
+              weight: 25,
+              equipped: false
+            }
+          ],
+          features: [
+            { id: 'ft-th-1', title: 'Estilo de Luta: Defesa', desc: '+1 na CA enquanto estiver usando armadura.' },
+            { id: 'ft-th-2', title: 'Retomar o Fôlego', desc: 'Ação bônus para recuperar 1d10 + 3 PV (1x por descanso curto ou longo).' },
+            { id: 'ft-th-3', title: 'Surto de Ação', desc: 'Realiza uma ação adicional no turno (1x por descanso curto ou longo).' },
+            { id: 'ft-th-4', title: 'Superioridade em Combate', desc: '4 dados de superioridade (d8) e manobras táticas de Mestre de Batalha.' }
+          ],
+          traits: 'Sempre mantém a calma no meio da batalha e analisa o terreno antes de avançar.',
+          ideals: 'Proteção. É dever dos fortes erguer o escudo pelos que não podem lutar.',
+          bonds: 'Carrego o estandarte da antiga Companhia da Muralha Cinzenta.',
+          flaws: 'Tenho dificuldade em recusar um desafio direto à minha honra.',
+          backstory: 'Ex-sargento da guarda fronteiriça que decidiu percorrer os reinos após o desmantelamento de seu batalhão, colocando sua lâmina e seu escudo a serviço de causas justas.'
+        }
+      ];
+    }
+
+    function createBlankCharacter5e() {
+      const defaultClass = 'Guerreiro';
+      const meta = CLASSES_5E[defaultClass];
+      const skillsObj = {};
+      SKILLS_5E.forEach(s => {
+        skillsObj[s.id] = { prof: false, exp: false };
+      });
+
+      const char = {
+        id: 'dnd5e-' + Date.now(),
+        name: 'Novo Aventureiro',
+        player: '',
+        race: 'Humano',
+        className: defaultClass,
+        subclass: '',
+        hitDie: meta.hitDie,
+        spellAbility: meta.spellAbility,
+        level: 1,
+        background: 'Soldado',
+        alignment: 'Neutro',
+        xp: 0,
+        inspiration: false,
+        avatarUrl: '',
+        presetIcon: '⚔️',
+        autoCalcCombat: true,
+        abilities: { FOR: 10, DES: 10, CON: 10, INT: 10, SAB: 10, CAR: 10 },
+        ac: 10,
+        initMisc: 0,
+        speed: '9m (30 ft)',
+        hpCurrent: 10,
+        hpMax: 10,
+        hpTemp: 0,
+        hitDiceCurrent: 1,
+        deathSaves: { successes: 0, failures: 0 },
+        savingThrows: {
+          FOR: meta.saves.includes('FOR'),
+          DES: meta.saves.includes('DES'),
+          CON: meta.saves.includes('CON'),
+          INT: meta.saves.includes('INT'),
+          SAB: meta.saves.includes('SAB'),
+          CAR: meta.saves.includes('CAR')
+        },
+        skills: skillsObj,
+        spellSlots: createEmptySpellSlots(),
+        spells: [],
+        coins: { cp: 0, sp: 0, ep: 0, gp: 15, pp: 0 },
+        equipment: [],
+        features: [],
+        traits: '',
+        ideals: '',
+        bonds: '',
+        flaws: '',
+        backstory: ''
+      };
+
+      char.hpMax = calculateAutoMaxHP(char);
+      char.hpCurrent = char.hpMax;
+      char.ac = calculateAutoAC(char);
+      return char;
+    }
+
+    // =========================================================================
+    // PERSISTÊNCIA NO LOCALSTORAGE
+    // =========================================================================
+    function loadFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            characters = parsed.map(c => ({
+              ...createBlankCharacter5e(),
+              ...c,
+              deathSaves: { successes: 0, failures: 0, ...(c.deathSaves || {}) },
+              coins: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0, ...(c.coins || {}) },
+              hitDiceCurrent: c.hitDiceCurrent !== undefined ? c.hitDiceCurrent : (c.level || 1)
+            }));
+            currentCharId = characters[0].id;
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao ler localStorage:', err);
+      }
+      characters = getInitialPresetCharacter();
+      currentCharId = characters[0].id;
+      saveToStorage(false);
+    }
+
+    function saveToStorage(updateBadge = true) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
+        if (updateBadge) {
+          const badge = document.getElementById('save-indicator');
+          if (badge) {
+            const now = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Salvo às ${now}`;
+          }
+        }
+      } catch (e) {
+        showToast('Erro ao salvar no navegador.', 'error');
+      }
+    }
+
+    function getCurrentCharacter() {
+      return characters.find(c => c.id === currentCharId) || characters[0];
+    }
+
+    // =========================================================================
+    // NAVEGAÇÃO ENTRE TELAS E ABAS
+    // =========================================================================
+    function switchView(view) {
+      const galleryEl = document.getElementById('view-gallery');
+      const editorEl = document.getElementById('view-editor');
+      const tabGallery = document.getElementById('tab-gallery');
+      const tabEditor = document.getElementById('tab-editor');
+
+      if (view === 'gallery') {
+        galleryEl.classList.remove('hidden');
+        editorEl.classList.add('hidden');
+        tabGallery.className = 'px-3 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all bg-[#d4af37] text-[#0b0d11]';
+        tabEditor.className = 'px-3 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white';
+        renderGallery();
+      } else {
+        galleryEl.classList.add('hidden');
+        editorEl.classList.remove('hidden');
+        tabEditor.className = 'px-3 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all bg-[#d4af37] text-[#0b0d11]';
+        tabGallery.className = 'px-3 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white';
+        renderEditor();
+      }
+    }
+
+    function switchSheetTab(tab) {
+      const tabs = ['skills', 'spells', 'equipment', 'lore'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(`panel-${t}`);
+        const btn = document.getElementById(`sheet-tab-${t}`);
+        if (t === tab) {
+          panel.classList.remove('hidden');
+          btn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold bg-[#d4af37] text-[#0b0d11] transition';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-[#0d1017] text-slate-300 hover:text-white border border-[#283040] transition';
+        }
+      });
+    }
+
+    // =========================================================================
+    // 1. GALERIA DE PERSONAGENS ("MINHAS FICHAS")
+    // =========================================================================
+    function getLevelBucket(level) {
+      const lv = Number(level) || 1;
+      if (lv <= 4) return '1-4';
+      if (lv <= 10) return '5-10';
+      if (lv <= 16) return '11-16';
+      return '17-20';
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById('gallery-grid');
+      const query = (document.getElementById('gallery-search').value || '').toLowerCase().trim();
+      const classSelect = document.getElementById('gallery-class-filter');
+      const selectedClass = classSelect.value;
+      const selectedLevel = document.getElementById('gallery-level-filter').value;
+
+      const all12Classes = Object.keys(CLASSES_5E);
+      classSelect.innerHTML = `<option value="">Todas as Classes (12)</option>` +
+        all12Classes.map(cls => `<option value="${escapeHTML(cls)}" ${cls === selectedClass ? 'selected' : ''}>${escapeHTML(cls)}</option>`).join('');
+
+      const filtered = characters.filter(c => {
+        const matchText =
+          (c.name || '').toLowerCase().includes(query) ||
+          (c.race || '').toLowerCase().includes(query) ||
+          (c.className || '').toLowerCase().includes(query) ||
+          (c.subclass || '').toLowerCase().includes(query) ||
+          (c.background || '').toLowerCase().includes(query);
+        const matchClass = !selectedClass || c.className === selectedClass;
+        const matchLevel = !selectedLevel || getLevelBucket(c.level) === selectedLevel;
+        return matchText && matchClass && matchLevel;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full card-obsidian p-10 text-center">
+            <p class="font-fantasy text-lg text-white mb-2">Nenhuma ficha encontrada</p>
+            <p class="text-sm text-slate-400 mb-4">Limpe os filtros ou crie um novo personagem de D&D 5e.</p>
+            <button onclick="createNewCharacter()" class="btn-gold px-4 py-2 text-sm">+ Nova Ficha</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(char => {
+        const prof = getProficiencyBonus(char.level);
+        const hpCur = Number(char.hpCurrent) || 0;
+        const hpMax = Math.max(1, Number(char.hpMax) || 1);
+        const hpPct = Math.max(0, Math.min(100, Math.round((hpCur / hpMax) * 100)));
+
+        const avatarHTML = char.avatarUrl
+          ? `<img src="${escapeHTML(char.avatarUrl)}" onerror="this.style.display='none'" class="w-full h-full object-cover" />`
+          : `<span class="text-2xl">${char.presetIcon || getInitials(char.name)}</span>`;
+
+        const abilityChips = ABILITY_DEFS.map(ab => {
+          const score = char.abilities?.[ab.key] ?? 10;
+          const mod = formatSigned(getAbilityModifier(score));
+          return `
+            <div class="bg-[#0d1017] border border-[#283040]/80 rounded-lg py-1.5 px-1 text-center">
+              <div class="text-[10px] font-bold text-slate-400">${ab.key}</div>
+              <div class="text-xs font-extrabold text-[#d4af37]">${mod}</div>
+              <div class="text-[10px] text-slate-500">${score}</div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="card-obsidian p-5 flex flex-col justify-between hover:border-[#d4af37]/50 transition-all group">
+            <div>
+              <div class="flex items-start gap-3.5 mb-4">
+                <div class="w-14 h-14 rounded-xl bg-[#0d1017] border border-[#d4af37]/45 flex items-center justify-center font-fantasy font-bold text-[#d4af37] overflow-hidden shrink-0">
+                  ${avatarHTML}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-semibold text-[#d4af37] bg-[#d4af37]/10 border border-[#d4af37]/25 px-2 py-0.5 rounded">
+                      Nível ${char.level} • Prof ${formatSigned(prof)}
+                    </span>
+                    <span class="text-xs font-semibold text-slate-200 bg-[#0d1017] px-2 py-0.5 rounded border border-[#283040]">
+                      CA ${char.ac ?? 10}
+                    </span>
+                  </div>
+                  <h3 class="font-fantasy text-lg font-bold text-white truncate mt-1 group-hover:text-[#d4af37] transition-colors">
+                    ${escapeHTML(char.name || 'Sem Nome')}
+                  </h3>
+                  <p class="text-xs text-slate-300 truncate">
+                    ${escapeHTML(char.race || 'Humano')} • ${escapeHTML(char.className || 'Guerreiro')}${char.subclass ? ` (${escapeHTML(char.subclass)})` : ''}
+                  </p>
+                  ${char.background ? `<p class="text-[11px] text-slate-500 truncate mt-0.5">Antecedente: ${escapeHTML(char.background)}</p>` : ''}
+                </div>
+              </div>
+
+              <!-- Barra de PV -->
+              <div class="mb-4">
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-rose-400 font-semibold">Pontos de Vida</span>
+                  <span class="text-slate-200 font-bold">${hpCur} / ${hpMax} PV${char.hpTemp ? ` (+${char.hpTemp} temp)` : ''}</span>
+                </div>
+                <div class="w-full h-2 bg-[#0d1017] rounded-full overflow-hidden">
+                  <div class="h-full bg-rose-500 transition-all duration-300" style="width: ${hpPct}%"></div>
+                </div>
+              </div>
+
+              <!-- 6 Atributos -->
+              <div class="grid grid-cols-6 gap-1.5 mb-4">
+                ${abilityChips}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-3 border-t border-[#283040]">
+              <button onclick="openCharacter('${char.id}')" class="btn-gold flex-1 py-2 text-xs">
+                Abrir Ficha
+              </button>
+              <button onclick="duplicateCharacterById('${char.id}')" class="btn-subtle px-3 py-2 text-xs">
+                Duplicar
+              </button>
+              <button onclick="confirmDeleteCharacter('${char.id}')" class="btn-subtle px-3 py-2 text-xs text-rose-400 hover:border-rose-500/40 hover:text-rose-300">
+                Excluir
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openCharacter(id) {
+      currentCharId = id;
+      switchView('editor');
+    }
+
+    function createNewCharacter() {
+      const novo = createBlankCharacter5e();
+      characters.unshift(novo);
+      currentCharId = novo.id;
+      saveToStorage();
+      switchView('editor');
+      showToast('Nova ficha de D&D 5e criada!');
+    }
+
+    function duplicateCharacterById(id) {
+      const orig = characters.find(c => c.id === id);
+      if (!orig) return;
+      const clone = JSON.parse(JSON.stringify(orig));
+      clone.id = 'dnd5e-' + Date.now();
+      clone.name = `${orig.name} (Cópia)`;
+      characters.unshift(clone);
+      saveToStorage();
+      renderGallery();
+      showToast(`"${orig.name}" duplicado!`);
+    }
+
+    function duplicateCurrentCharacter() {
+      if (!currentCharId) return;
+      duplicateCharacterById(currentCharId);
+      currentCharId = characters[0].id;
+      renderEditor();
+    }
+
+    function confirmDeleteCharacter(id) {
+      const char = characters.find(c => c.id === id);
+      if (!char) return;
+      openConfirmModal(
+        'Excluir Ficha',
+        `Deseja realmente excluir "${char.name}"? Esta ação não pode ser desfeita.`,
+        () => {
+          characters = characters.filter(c => c.id !== id);
+          if (characters.length === 0) {
+            characters = getInitialPresetCharacter();
+          }
+          if (currentCharId === id) {
+            currentCharId = characters[0].id;
+          }
+          saveToStorage();
+          renderGallery();
+          showToast('Ficha excluída.');
+        }
+      );
+    }
+
+    // =========================================================================
+    // 2. RENDERIZAÇÃO COMPLETA DA FICHA D&D 5E
+    // =========================================================================
+    function renderEditor() {
+      const char = getCurrentCharacter();
+      if (!char) return;
+
+      // Cabeçalho de Identidade
+      document.getElementById('field-name').value = char.name || '';
+      document.getElementById('field-player').value = char.player || '';
+      document.getElementById('field-level').value = char.level ?? 1;
+      document.getElementById('field-xp').value = char.xp ?? 0;
+      document.getElementById('field-race').value = char.race || 'Humano';
+
+      const classSelect = document.getElementById('field-className');
+      classSelect.value = CLASSES_5E[char.className] ? char.className : 'Guerreiro';
+      renderClassDefaultsBanner(classSelect.value);
+
+      document.getElementById('field-subclass').value = char.subclass || '';
+      document.getElementById('field-background').value = char.background || '';
+      document.getElementById('field-alignment').value = char.alignment || 'Neutro';
+      document.getElementById('field-hitDie').value = char.hitDie || 'd10';
+      document.getElementById('field-avatarUrl').value = char.avatarUrl || '';
+
+      renderInspirationButton(char);
+
+      // Combate
+      document.getElementById('field-autoCalcCombat').checked = Boolean(char.autoCalcCombat);
+      document.getElementById('field-ac').value = char.ac ?? 10;
+      document.getElementById('field-initMisc').value = char.initMisc ?? 0;
+      document.getElementById('field-speed').value = char.speed || '9m (30 ft)';
+      document.getElementById('field-hpCurrent').value = char.hpCurrent ?? 10;
+      document.getElementById('field-hpMax').value = char.hpMax ?? 10;
+      document.getElementById('field-hpTemp').value = char.hpTemp ?? 0;
+
+      // Conjuração
+      document.getElementById('field-spellAbility').value = char.spellAbility || 'NONE';
+
+      // Moedas
+      const coins = char.coins || {};
+      document.getElementById('coin-cp').value = coins.cp ?? 0;
+      document.getElementById('coin-sp').value = coins.sp ?? 0;
+      document.getElementById('coin-ep').value = coins.ep ?? 0;
+      document.getElementById('coin-gp').value = coins.gp ?? 0;
+      document.getElementById('coin-pp').value = coins.pp ?? 0;
+
+      // História & Personalidade
+      document.getElementById('field-traits').value = char.traits || '';
+      document.getElementById('field-ideals').value = char.ideals || '';
+      document.getElementById('field-bonds').value = char.bonds || '';
+      document.getElementById('field-flaws').value = char.flaws || '';
+      document.getElementById('field-backstory').value = char.backstory || '';
+
+      renderAvatarPreview(char);
+      renderAbilities6(char);
+      renderCombatStats(char);
+      renderHitDiceAndDeathSaves(char);
+      renderSavingThrowsAndPassives(char);
+      renderSkills5e(char);
+      renderSpellcasting(char);
+      renderEquipment(char);
+      renderFeatures(char);
+    }
+
+    function renderInspirationButton(char = getCurrentCharacter()) {
+      const btn = document.getElementById('btn-inspiration');
+      const star = document.getElementById('inspiration-star');
+      if (char.inspiration) {
+        btn.className = 'mt-1 px-3 py-1 rounded-full border text-xs font-bold flex items-center gap-1.5 transition-all bg-[#d4af37]/20 border-[#d4af37] text-[#d4af37] shadow-sm';
+        star.textContent = '★';
+      } else {
+        btn.className = 'mt-1 px-3 py-1 rounded-full border text-xs font-semibold flex items-center gap-1.5 transition-all bg-[#0d1017] border-[#283040] text-slate-400 hover:border-[#d4af37]/60';
+        star.textContent = '☆';
+      }
+    }
+
+    function toggleInspiration() {
+      const char = getCurrentCharacter();
+      char.inspiration = !char.inspiration;
+      saveToStorage();
+      renderInspirationButton(char);
+      showToast(char.inspiration ? 'Inspiração Heroica ativada!' : 'Inspiração utilizada.');
+    }
+
+    function renderClassDefaultsBanner(className) {
+      const meta = CLASSES_5E[className] || CLASSES_5E['Guerreiro'];
+      document.getElementById('class-default-saves').textContent = meta.saves.join(' e ');
+      document.getElementById('class-default-spell').textContent = meta.spellAbility === 'NONE' ? 'Nenhuma' : meta.spellAbility;
+    }
+
+    function handleClassSelectChange(className) {
+      const char = getCurrentCharacter();
+      const meta = CLASSES_5E[className] || CLASSES_5E['Guerreiro'];
+      char.className = className;
+      char.hitDie = meta.hitDie;
+      char.spellAbility = meta.spellAbility;
+
+      if (char.autoCalcCombat) {
+        char.hpMax = calculateAutoMaxHP(char);
+        char.hpCurrent = Math.min(char.hpMax, Math.max(char.hpCurrent, 0));
+      }
+
+      saveToStorage();
+      renderEditor();
+      showToast(`Classe selecionada: ${className} (Dado de Vida ${meta.hitDie}).`);
+    }
+
+    function applyClassDefaults() {
+      const char = getCurrentCharacter();
+      const meta = CLASSES_5E[char.className] || CLASSES_5E['Guerreiro'];
+      char.hitDie = meta.hitDie;
+      char.spellAbility = meta.spellAbility;
+      char.savingThrows = {
+        FOR: meta.saves.includes('FOR'),
+        DES: meta.saves.includes('DES'),
+        CON: meta.saves.includes('CON'),
+        INT: meta.saves.includes('INT'),
+        SAB: meta.saves.includes('SAB'),
+        CAR: meta.saves.includes('CAR')
+      };
+      if (char.autoCalcCombat) {
+        char.hpMax = calculateAutoMaxHP(char);
+        char.ac = calculateAutoAC(char);
+      }
+      saveToStorage();
+      renderEditor();
+      showToast(`Regras padrão de ${char.className} sincronizadas!`);
+    }
+
+    function updateCharacterField(field, value) {
+      const char = getCurrentCharacter();
+      if (!char) return;
+      char[field] = value;
+      if (field === 'avatarUrl' || field === 'name') {
+        renderAvatarPreview(char);
+      }
+      saveToStorage();
+    }
+
+    function handleLevelChange(val) {
+      const char = getCurrentCharacter();
+      const lv = Math.min(20, Math.max(1, parseInt(val, 10) || 1));
+      char.level = lv;
+      char.hitDiceCurrent = Math.min(lv, Math.max(0, char.hitDiceCurrent ?? lv));
+      if (char.autoCalcCombat) {
+        char.hpMax = calculateAutoMaxHP(char);
+        char.hpCurrent = Math.min(char.hpMax, Math.max(char.hpCurrent, 0));
+      }
+      saveToStorage();
+      renderEditor();
+    }
+
+    function handleHitDieChange(die) {
+      const char = getCurrentCharacter();
+      char.hitDie = die;
+      if (char.autoCalcCombat) {
+        char.hpMax = calculateAutoMaxHP(char);
+      }
+      saveToStorage();
+      renderCombatStats(char);
+      renderHitDiceAndDeathSaves(char);
+    }
+
+    function toggleAutoCalcCombat(checked) {
+      const char = getCurrentCharacter();
+      char.autoCalcCombat = checked;
+      if (checked) {
+        char.hpMax = calculateAutoMaxHP(char);
+        char.ac = calculateAutoAC(char);
+      }
+      saveToStorage();
+      renderEditor();
+    }
+
+    // --- Retrato ---
+    function renderAvatarPreview(char) {
+      const box = document.getElementById('char-avatar-preview');
+      if (char.avatarUrl) {
+        box.innerHTML = `<img src="${escapeHTML(char.avatarUrl)}" onerror="this.parentElement.innerHTML='${char.presetIcon || getInitials(char.name)}'" class="w-full h-full object-cover" />`;
+      } else {
+        box.innerHTML = `<span class="text-3xl">${char.presetIcon || getInitials(char.name)}</span>`;
+      }
+    }
+
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const char = getCurrentCharacter();
+        char.avatarUrl = e.target.result;
+        document.getElementById('field-avatarUrl').value = '';
+        renderAvatarPreview(char);
+        saveToStorage();
+        showToast('Foto do personagem atualizada!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function cyclePresetAvatar() {
+      const char = getCurrentCharacter();
+      char.avatarUrl = '';
+      document.getElementById('field-avatarUrl').value = '';
+      const idx = PRESET_ICONS.indexOf(char.presetIcon || '🛡️');
+      char.presetIcon = PRESET_ICONS[(idx + 1) % PRESET_ICONS.length];
+      renderAvatarPreview(char);
+      saveToStorage();
+    }
+
+    function toggleAvatarUrlInput() {
+      const input = document.getElementById('field-avatarUrl');
+      input.classList.toggle('hidden');
+      if (!input.classList.contains('hidden')) input.focus();
+    }
+
+    // --- 6 Atributos (FOR, DES, CON, INT, SAB, CAR) ---
+    function renderAbilities6(char) {
+      const grid = document.getElementById('abilities-6-grid');
+      grid.innerHTML = ABILITY_DEFS.map(ab => {
+        const score = char.abilities?.[ab.key] ?? 10;
+        const mod = getAbilityModifier(score);
+        return `
+          <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 flex flex-col items-center text-center hover:border-[#d4af37]/50 transition-all">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-300">${ab.label}</span>
+            <span class="text-[10px] font-semibold text-slate-500 mb-1">${ab.key}</span>
+
+            <button type="button" onclick="rollAbilityCheck('${ab.key}')" title="Rolar teste de ${ab.label} (1d20 ${formatSigned(mod)})"
+              class="w-full py-1.5 rounded-lg bg-[#131720] hover:bg-[#d4af37] hover:text-[#0b0d11] border border-[#d4af37]/30 font-fantasy text-2xl font-extrabold text-[#d4af37] transition-all my-1">
+              ${formatSigned(mod)}
+            </button>
+
+            <input type="number" min="1" max="30" value="${score}"
+              oninput="updateAbilityScore('${ab.key}', Number(this.value))"
+              class="input-obsidian w-14 mt-1 py-0.5 text-center text-sm font-bold text-white" />
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateAbilityScore(key, val) {
+      const char = getCurrentCharacter();
+      const clamped = Math.min(30, Math.max(1, val || 10));
+      char.abilities[key] = clamped;
+
+      if (char.autoCalcCombat) {
+        if (key === 'CON') char.hpMax = calculateAutoMaxHP(char);
+        if (key === 'DES') char.ac = calculateAutoAC(char);
+      }
+
+      saveToStorage();
+      renderAbilities6(char);
+      renderCombatStats(char);
+      renderSavingThrowsAndPassives(char);
+      renderSkills5e(char);
+      renderSpellcasting(char);
+      renderEquipment(char);
+    }
+
+    // --- Combate, PV, Descansos & Death Saves ---
+    function renderCombatStats(char = getCurrentCharacter()) {
+      const prof = getProficiencyBonus(char.level);
+      const dexMod = getAbilityModifier(char.abilities?.DES ?? 10);
+      const conMod = getAbilityModifier(char.abilities?.CON ?? 10);
+      const initTotal = dexMod + (Number(char.initMisc) || 0);
+
+      document.getElementById('combat-prof-display').textContent = formatSigned(prof);
+      document.getElementById('save-prof-hint').textContent = formatSigned(prof);
+      document.getElementById('combat-level-display').textContent = `Nível ${char.level}`;
+      document.getElementById('btn-roll-initiative').textContent = formatSigned(initTotal);
+
+      document.getElementById('field-ac').value = char.ac ?? 10;
+      const equippedArmor = (char.equipment || []).find(i => i.equipped && i.type === 'Armadura');
+      const equippedShield = (char.equipment || []).find(i => i.equipped && i.type === 'Escudo');
+      if (char.autoCalcCombat) {
+        const parts = [];
+        parts.push(equippedArmor ? equippedArmor.name : 'Sem armadura (10)');
+        if (!equippedArmor || equippedArmor.armorCategory === 'leve') {
+          parts.push(`DES ${formatSigned(dexMod)}`);
+        } else if (equippedArmor.armorCategory === 'media') {
+          parts.push(`DES ${formatSigned(Math.min(2, dexMod))} (máx +2)`);
+        }
+        if (equippedShield) parts.push('Escudo');
+        document.getElementById('ac-formula-hint').textContent = parts.join(' + ');
+      } else {
+        document.getElementById('ac-formula-hint').textContent = 'CA definida manualmente';
+      }
+
+      const hpCur = Number(char.hpCurrent) || 0;
+      const hpMax = Math.max(1, Number(char.hpMax) || 1);
+      document.getElementById('field-hpCurrent').value = hpCur;
+      document.getElementById('field-hpMax').value = hpMax;
+      document.getElementById('field-hpTemp').value = char.hpTemp ?? 0;
+      document.getElementById('hp-formula-hint').textContent = `(Dado ${char.hitDie || 'd10'} • CON ${formatSigned(conMod)})`;
+
+      const pct = Math.max(0, Math.min(100, Math.round((hpCur / hpMax) * 100)));
+      const bar = document.getElementById('hp-progress-bar');
+      bar.style.width = `${pct}%`;
+      bar.className = pct <= 25
+        ? 'h-full bg-red-600 transition-all duration-300'
+        : pct <= 60
+          ? 'h-full bg-amber-500 transition-all duration-300'
+          : 'h-full bg-emerald-500 transition-all duration-300';
+    }
+
+    function handleCurrentHPInput(val) {
+      const char = getCurrentCharacter();
+      const prevHP = Number(char.hpCurrent) || 0;
+      const nextHP = Math.max(0, val || 0);
+      char.hpCurrent = nextHP;
+
+      // Regra D&D 5e: se o personagem estava em 0 PV e recebeu cura (> 0 PV), zera os Testes contra a Morte
+      if (prevHP === 0 && nextHP > 0) {
+        char.deathSaves = { successes: 0, failures: 0 };
+        renderHitDiceAndDeathSaves(char);
+      }
+
+      saveToStorage();
+      renderCombatStats(char);
+    }
+
+    function adjustHP(delta) {
+      const char = getCurrentCharacter();
+      let temp = Number(char.hpTemp) || 0;
+      const prevHP = Number(char.hpCurrent) || 0;
+      let cur = prevHP;
+      const max = Math.max(1, Number(char.hpMax) || 1);
+
+      if (delta < 0 && temp > 0) {
+        const dmg = Math.abs(delta);
+        const absorbed = Math.min(temp, dmg);
+        temp -= absorbed;
+        const remainder = dmg - absorbed;
+        cur = Math.max(0, cur - remainder);
+        char.hpTemp = temp;
+        char.hpCurrent = cur;
+      } else {
+        cur = Math.max(0, Math.min(max, cur + delta));
+        char.hpCurrent = cur;
+      }
+
+      if (prevHP === 0 && cur > 0) {
+        char.deathSaves = { successes: 0, failures: 0 };
+      }
+
+      saveToStorage();
+      renderCombatStats(char);
+      renderHitDiceAndDeathSaves(char);
+    }
+
+    // --- Dados de Vida, Descanso Curto, Descanso Longo & Death Saves ---
+    function renderHitDiceAndDeathSaves(char = getCurrentCharacter()) {
+      const maxHD = Math.max(1, Number(char.level) || 1);
+      const curHD = Math.min(maxHD, Math.max(0, Number(char.hitDiceCurrent ?? maxHD)));
+      const dieStr = char.hitDie || 'd10';
+
+      document.getElementById('hit-dice-die-badge').textContent = `${maxHD}${dieStr}`;
+      document.getElementById('field-hitDiceCurrent').value = curHD;
+      document.getElementById('field-hitDiceCurrent').max = maxHD;
+      document.getElementById('hit-dice-max-display').textContent = maxHD;
+
+      const ds = char.deathSaves || { successes: 0, failures: 0 };
+      const succEl = document.getElementById('death-saves-successes');
+      const failEl = document.getElementById('death-saves-failures');
+
+      let succHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        const active = (ds.successes || 0) >= i;
+        succHTML += `
+          <button type="button" onclick="toggleDeathSaveCount('successes', ${i})" title="Marcar/Desmarcar sucesso ${i}"
+            class="w-5 h-5 rounded-full border-2 transition-all ${active ? 'bg-emerald-500 border-emerald-300 shadow-sm shadow-emerald-500/40' : 'bg-[#0b0d11] border-slate-600 hover:border-emerald-400'}">
+          </button>
+        `;
+      }
+      succEl.innerHTML = succHTML;
+
+      let failHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        const active = (ds.failures || 0) >= i;
+        failHTML += `
+          <button type="button" onclick="toggleDeathSaveCount('failures', ${i})" title="Marcar/Desmarcar falha ${i}"
+            class="w-5 h-5 rounded-full border-2 transition-all ${active ? 'bg-rose-600 border-rose-300 shadow-sm shadow-rose-500/40' : 'bg-[#0b0d11] border-slate-600 hover:border-rose-400'}">
+          </button>
+        `;
+      }
+      failEl.innerHTML = failHTML;
+    }
+
+    function updateHitDiceCurrent(val) {
+      const char = getCurrentCharacter();
+      const maxHD = Math.max(1, Number(char.level) || 1);
+      char.hitDiceCurrent = Math.min(maxHD, Math.max(0, val || 0));
+      saveToStorage();
+      renderHitDiceAndDeathSaves(char);
+    }
+
+    function takeShortRest() {
+      const char = getCurrentCharacter();
+      const maxHD = Math.max(1, Number(char.level) || 1);
+      const curHD = Math.min(maxHD, Math.max(0, Number(char.hitDiceCurrent ?? maxHD)));
+
+      if (curHD <= 0) {
+        showToast('Sem Dados de Vida disponíveis para gastar no Descanso Curto.', 'error');
+        return;
+      }
+
+      const dieSides = getHitDieSides(char.hitDie);
+      const conMod = getAbilityModifier(char.abilities?.CON ?? 10);
+      const roll = rollSingleDie(dieSides);
+      const healed = Math.max(1, roll + conMod); // Regra oficial 5e: mínimo 1 PV recuperado
+
+      const prevHP = Number(char.hpCurrent) || 0;
+      const maxHP = Math.max(1, Number(char.hpMax) || 1);
+      char.hitDiceCurrent = curHD - 1;
+      char.hpCurrent = Math.min(maxHP, prevHP + healed);
+
+      if (prevHP === 0 && char.hpCurrent > 0) {
+        char.deathSaves = { successes: 0, failures: 0 };
+      }
+
+      displayRollResult(
+        `Descanso Curto (1${char.hitDie || 'd10'} + CON)`,
+        `+${healed} PV`,
+        `Dado [${roll}] ${formatSigned(conMod)} • PV: ${prevHP} → ${char.hpCurrent}/${maxHP} (${char.hitDiceCurrent}/${maxHD} Dados de Vida)`,
+        'normal'
+      );
+
+      saveToStorage();
+      renderCombatStats(char);
+      renderHitDiceAndDeathSaves(char);
+      showToast(`Descanso Curto: recuperou ${healed} PV (1 Dado de Vida gasto).`);
+    }
+
+    function takeLongRest() {
+      const char = getCurrentCharacter();
+      const maxHP = Math.max(1, Number(char.hpMax) || 1);
+      const maxHD = Math.max(1, Number(char.level) || 1);
+      const curHD = Math.min(maxHD, Math.max(0, Number(char.hitDiceCurrent ?? maxHD)));
+
+      // Regra oficial D&D 5e: recupera metade do total de Dados de Vida (mínimo 1)
+      const hdRecovered = Math.max(1, Math.floor(maxHD / 2));
+      char.hitDiceCurrent = Math.min(maxHD, curHD + hdRecovered);
+
+      // Restaura PV ao máximo e zera Testes contra a Morte
+      char.hpCurrent = maxHP;
+      char.deathSaves = { successes: 0, failures: 0 };
+
+      // Restaura todos os espaços de magia
+      if (char.spellSlots) {
+        for (let circle = 1; circle <= 9; circle++) {
+          if (char.spellSlots[circle]) {
+            char.spellSlots[circle].current = char.spellSlots[circle].max || 0;
+          }
+        }
+      }
+
+      saveToStorage();
+      renderCombatStats(char);
+      renderHitDiceAndDeathSaves(char);
+      renderSpellcasting(char);
+      showToast('Descanso Longo concluído: PV, Espaços de Magia e Dados de Vida restaurados!');
+    }
+
+    function toggleDeathSaveCount(type, index) {
+      const char = getCurrentCharacter();
+      if (!char.deathSaves) char.deathSaves = { successes: 0, failures: 0 };
+      const current = char.deathSaves[type] || 0;
+      char.deathSaves[type] = current === index ? index - 1 : index;
+      saveToStorage();
+      renderHitDiceAndDeathSaves(char);
+    }
+
+    function resetDeathSaves() {
+      const char = getCurrentCharacter();
+      char.deathSaves = { successes: 0, failures: 0 };
+      saveToStorage();
+      renderHitDiceAndDeathSaves(char);
+      showToast('Testes contra a Morte zerados.');
+    }
+
+    function rollDeathSave() {
+      const char = getCurrentCharacter();
+      if (!char.deathSaves) char.deathSaves = { successes: 0, failures: 0 };
+
+      const roll = rollSingleDie(20);
+      let detail = `1d20 → [${roll}]`;
+      let highlight = 'normal';
+
+      if (roll === 20) {
+        // Regra oficial 5e: 20 natural recupera 1 PV e zera os testes
+        char.hpCurrent = Math.min(Math.max(1, char.hpMax || 1), (char.hpCurrent || 0) + 1);
+        char.deathSaves = { successes: 0, failures: 0 };
+        highlight = 'crit20';
+        detail += ' • 20 NATURAL! Recuperou 1 PV e recobrou a consciência!';
+        showToast('20 Natural no Teste contra a Morte! Recuperou 1 PV!');
+      } else if (roll === 1) {
+        // Regra oficial 5e: 1 natural conta como 2 falhas
+        char.deathSaves.failures = Math.min(3, (char.deathSaves.failures || 0) + 2);
+        highlight = 'crit1';
+        detail += ` • 1 NATURAL! Conta como 2 falhas (${char.deathSaves.failures}/3 falhas).`;
+      } else if (roll >= 10) {
+        char.deathSaves.successes = Math.min(3, (char.deathSaves.successes || 0) + 1);
+        detail += ` • Sucesso (${char.deathSaves.successes}/3 sucessos).`;
+        if (char.deathSaves.successes >= 3) {
+          detail += ' Personagem estabilizado!';
+          showToast('3 Sucessos: Personagem estabilizado!');
+        }
+      } else {
+        char.deathSaves.failures = Math.min(3, (char.deathSaves.failures || 0) + 1);
+        detail += ` • Falha (${char.deathSaves.failures}/3 falhas).`;
+      }
+
+      if (char.deathSaves.failures >= 3) {
+        detail += ' ☠️ 3 Falhas atingidas!';
+        showToast('3 Falhas nos Testes contra a Morte!', 'error');
+      }
+
+      displayRollResult('Teste contra a Morte', roll, detail, highlight);
+      saveToStorage();
+      renderCombatStats(char);
+      renderHitDiceAndDeathSaves(char);
+    }
+
+    // --- Salvaguardas & 18 Perícias Oficiais ---
+    function renderSavingThrowsAndPassives(char) {
+      const list = document.getElementById('saving-throws-list');
+      list.innerHTML = ABILITY_DEFS.map(ab => {
+        const checked = Boolean(char.savingThrows?.[ab.key]);
+        const bonus = getSavingThrowBonus(char, ab.key);
+        return `
+          <div class="flex items-center justify-between bg-[#131720] border border-[#283040]/80 rounded-lg px-2.5 py-1.5">
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-200 cursor-pointer">
+              <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleSavingThrow('${ab.key}', this.checked)"
+                class="w-4 h-4 accent-[#d4af37] rounded cursor-pointer" />
+              <span>${ab.label} <span class="text-slate-500">(${ab.key})</span></span>
+            </label>
+            <button type="button" onclick="rollSavingThrow('${ab.key}')"
+              class="px-2.5 py-0.5 rounded bg-[#0d1017] hover:bg-[#d4af37] hover:text-[#0b0d11] font-fantasy text-sm font-bold text-[#d4af37] transition">
+              ${formatSigned(bonus)}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      const percBonus = getSkillBonus(char, { id: 'percepcao', ability: 'SAB' });
+      const invBonus = getSkillBonus(char, { id: 'investigacao', ability: 'INT' });
+      const insBonus = getSkillBonus(char, { id: 'intuicao', ability: 'SAB' });
+
+      document.getElementById('passive-scores-box').innerHTML = `
+        <div class="flex items-center justify-between bg-[#131720] border border-[#283040]/80 rounded-lg px-3 py-1.5">
+          <span class="text-slate-300 font-medium">Percepção Passiva</span>
+          <strong class="font-fantasy text-sm text-[#d4af37]">${10 + percBonus}</strong>
+        </div>
+        <div class="flex items-center justify-between bg-[#131720] border border-[#283040]/80 rounded-lg px-3 py-1.5">
+          <span class="text-slate-300">Investigação Passiva</span>
+          <strong class="font-fantasy text-sm text-slate-200">${10 + invBonus}</strong>
+        </div>
+        <div class="flex items-center justify-between bg-[#131720] border border-[#283040]/80 rounded-lg px-3 py-1.5">
+          <span class="text-slate-300">Intuição Passiva</span>
+          <strong class="font-fantasy text-sm text-slate-200">${10 + insBonus}</strong>
+        </div>
+      `;
+    }
+
+    function toggleSavingThrow(key, checked) {
+      const char = getCurrentCharacter();
+      char.savingThrows[key] = checked;
+      saveToStorage();
+      renderSavingThrowsAndPassives(char);
+    }
+
+    function renderSkills5e(char) {
+      const list = document.getElementById('skills-5e-list');
+      list.innerHTML = SKILLS_5E.map(sk => {
+        const st = char.skills?.[sk.id] || { prof: false, exp: false };
+        const total = getSkillBonus(char, sk);
+
+        return `
+          <div class="flex items-center justify-between gap-2 bg-[#131720] border border-[#283040]/80 rounded-lg px-2.5 py-1.5 hover:border-[#d4af37]/40 transition">
+            <div class="flex items-center gap-2 min-w-0">
+              <label class="inline-flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer shrink-0" title="Proficiente">
+                <input type="checkbox" ${st.prof ? 'checked' : ''} onchange="updateSkillState('${sk.id}', 'prof', this.checked)"
+                  class="w-3.5 h-3.5 accent-[#d4af37] rounded cursor-pointer" />
+                <span>Prof</span>
+              </label>
+              <label class="inline-flex items-center gap-1 text-[10px] text-amber-300/80 cursor-pointer shrink-0" title="Especialista (Expertise)">
+                <input type="checkbox" ${st.exp ? 'checked' : ''} onchange="updateSkillState('${sk.id}', 'exp', this.checked)"
+                  class="w-3.5 h-3.5 accent-amber-400 rounded cursor-pointer" />
+                <span>Esp</span>
+              </label>
+              <span class="text-xs font-medium text-slate-100 truncate">${sk.name}</span>
+              <span class="text-[10px] text-slate-500 shrink-0">(${sk.ability})</span>
+            </div>
+
+            <button type="button" onclick="rollSkillCheck('${sk.id}')" title="Rolar ${sk.name}"
+              class="px-2.5 py-0.5 rounded bg-[#0d1017] hover:bg-[#d4af37] hover:text-[#0b0d11] font-fantasy text-sm font-bold text-[#d4af37] transition min-w-[46px] text-center shrink-0">
+              ${formatSigned(total)}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateSkillState(skillId, field, value) {
+      const char = getCurrentCharacter();
+      if (!char.skills) char.skills = {};
+      if (!char.skills[skillId]) char.skills[skillId] = { prof: false, exp: false };
+      if (field === 'exp' && value) {
+        char.skills[skillId].prof = true;
+      }
+      if (field === 'prof' && !value) {
+        char.skills[skillId].exp = false;
+      }
+      char.skills[skillId][field] = value;
+      saveToStorage();
+      renderSkills5e(char);
+      renderSavingThrowsAndPassives(char);
+    }
+
+    // --- Aba de Conjuração ---
+    function renderSpellcasting(char = getCurrentCharacter()) {
+      const prof = getProficiencyBonus(char.level);
+      const abilityKey = char.spellAbility || 'NONE';
+      const mod = abilityKey === 'NONE' ? 0 : getAbilityModifier(char.abilities?.[abilityKey] ?? 10);
+
+      document.getElementById('spell-save-dc').textContent = abilityKey === 'NONE' ? '—' : `${8 + prof + mod}`;
+      document.getElementById('spell-attack-bonus-btn').textContent = abilityKey === 'NONE' ? '—' : formatSigned(prof + mod);
+
+      const slotsContainer = document.getElementById('spell-slots-grid');
+      if (!char.spellSlots) char.spellSlots = createEmptySpellSlots();
+
+      let slotsHTML = '';
+      for (let circle = 1; circle <= 9; circle++) {
+        const s = char.spellSlots[circle] || { current: 0, max: 0 };
+        slotsHTML += `
+          <div class="bg-[#0d1017] border border-[#283040] rounded-lg p-2 text-center">
+            <div class="text-[10px] font-bold text-slate-400 mb-1">${circle}º Círculo</div>
+            <div class="flex items-center justify-center gap-1">
+              <input type="number" min="0" max="9" value="${s.current ?? 0}" title="Espaços atuais"
+                oninput="updateSpellSlot(${circle}, 'current', Number(this.value))"
+                class="input-obsidian w-9 px-1 py-0.5 text-center text-xs font-bold text-sky-300" />
+              <span class="text-slate-500 text-xs">/</span>
+              <input type="number" min="0" max="9" value="${s.max ?? 0}" title="Espaços máximos"
+                oninput="updateSpellSlot(${circle}, 'max', Number(this.value))"
+                class="input-obsidian w-9 px-1 py-0.5 text-center text-xs text-slate-300" />
+            </div>
+          </div>
+        `;
+      }
+      slotsContainer.innerHTML = slotsHTML;
+
+      const spellsList = document.getElementById('spells-list');
+      const spells = char.spells || [];
+      if (spells.length === 0) {
+        spellsList.innerHTML = `<p class="col-span-full text-xs text-slate-500 italic py-3">Nenhum truque ou magia cadastrado. Clique em "+ Adicionar Magia".</p>`;
+      } else {
+        spellsList.innerHTML = spells.map((sp, idx) => `
+          <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <input type="text" value="${escapeHTML(sp.name)}" oninput="updateSpell(${idx}, 'name', this.value)"
+                placeholder="Nome da magia" class="bg-transparent font-bold text-xs text-sky-300 focus:outline-none w-full" />
+              <select onchange="updateSpell(${idx}, 'circle', this.value)" class="input-obsidian px-2 py-0.5 text-[11px]">
+                <option value="Truque" ${sp.circle === 'Truque' ? 'selected' : ''}>Truque</option>
+                <option value="1º Círculo" ${sp.circle === '1º Círculo' ? 'selected' : ''}>1º Círculo</option>
+                <option value="2º Círculo" ${sp.circle === '2º Círculo' ? 'selected' : ''}>2º Círculo</option>
+                <option value="3º Círculo" ${sp.circle === '3º Círculo' ? 'selected' : ''}>3º Círculo</option>
+                <option value="4º Círculo" ${sp.circle === '4º Círculo' ? 'selected' : ''}>4º Círculo</option>
+                <option value="5º Círculo" ${sp.circle === '5º Círculo' ? 'selected' : ''}>5º Círculo</option>
+                <option value="6º Círculo" ${sp.circle === '6º Círculo' ? 'selected' : ''}>6º Círculo</option>
+                <option value="7º Círculo" ${sp.circle === '7º Círculo' ? 'selected' : ''}>7º Círculo</option>
+                <option value="8º Círculo" ${sp.circle === '8º Círculo' ? 'selected' : ''}>8º Círculo</option>
+                <option value="9º Círculo" ${sp.circle === '9º Círculo' ? 'selected' : ''}>9º Círculo</option>
+              </select>
+              <button type="button" onclick="removeSpell(${idx})" class="text-xs text-slate-500 hover:text-rose-400 no-print">✕</button>
+            </div>
+            <textarea rows="2" oninput="updateSpell(${idx}, 'desc', this.value)"
+              placeholder="Tempo de conjuração, alcance, componentes e efeito..." class="input-obsidian w-full p-2 text-xs text-slate-300">${escapeHTML(sp.desc || '')}</textarea>
+          </div>
+        `).join('');
+      }
+    }
+
+    function updateSpellSlot(circle, field, val) {
+      const char = getCurrentCharacter();
+      const clamped = Math.max(0, Math.min(9, val || 0));
+      char.spellSlots[circle][field] = clamped;
+      if (field === 'max' && char.spellSlots[circle].current > clamped) {
+        char.spellSlots[circle].current = clamped;
+      }
+      saveToStorage();
+      renderSpellcasting(char);
+    }
+
+    function addSpell() {
+      const char = getCurrentCharacter();
+      char.spells.push({
+        id: 'sp-' + Date.now(),
+        name: 'Nova Magia',
+        circle: 'Truque',
+        desc: ''
+      });
+      saveToStorage();
+      renderSpellcasting(char);
+    }
+
+    function updateSpell(idx, key, val) {
+      const char = getCurrentCharacter();
+      if (!char.spells[idx]) return;
+      char.spells[idx][key] = val;
+      saveToStorage();
+    }
+
+    function removeSpell(idx) {
+      const char = getCurrentCharacter();
+      char.spells.splice(idx, 1);
+      saveToStorage();
+      renderSpellcasting(char);
+    }
+
+    // --- Aba de Equipamentos, Moedas & Inventário ---
+    function handleNewItemTypeChange(type) {
+      const armorBox = document.getElementById('eq-armor-fields');
+      const weaponBox = document.getElementById('eq-weapon-fields');
+      if (type === 'Armadura' || type === 'Escudo') {
+        armorBox.classList.remove('hidden');
+        weaponBox.classList.add('hidden');
+        document.getElementById('eq-acBase').value = type === 'Escudo' ? '2' : '14';
+      } else if (type === 'Arma') {
+        armorBox.classList.add('hidden');
+        weaponBox.classList.remove('hidden');
+      } else {
+        armorBox.classList.add('hidden');
+        weaponBox.classList.add('hidden');
+      }
+    }
+
+    function updateCoin(coinKey, val) {
+      const char = getCurrentCharacter();
+      if (!char.coins) char.coins = { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
+      char.coins[coinKey] = Math.max(0, val || 0);
+      saveToStorage();
+      renderEquipment(char);
+    }
+
+    function renderEquipment(char = getCurrentCharacter()) {
+      const tbody = document.getElementById('equipment-tbody');
+      const items = char.equipment || [];
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-5 text-center text-xs text-slate-500 italic">Nenhum item no inventário.</td></tr>`;
+      } else {
+        tbody.innerHTML = items.map((it, idx) => {
+          const lineWeight = ((Number(it.weight) || 0) * (Number(it.qty) || 1)).toFixed(1);
+          let detailText = it.notes || '—';
+          if (it.type === 'Armadura') {
+            detailText = `CA ${it.acBase} (${it.armorCategory || 'leve'})${it.notes ? ' • ' + it.notes : ''}`;
+          } else if (it.type === 'Escudo') {
+            detailText = `+${it.acBonus || 2} CA${it.notes ? ' • ' + it.notes : ''}`;
+          } else if (it.type === 'Arma' && it.damage) {
+            detailText = `${it.damage}${it.notes ? ' • ' + it.notes : ''}`;
+          }
+
+          return `
+            <tr class="hover:bg-[#0d1017]/70">
+              <td class="py-2 px-2">
+                <input type="checkbox" ${it.equipped ? 'checked' : ''} onchange="toggleEquipItem(${idx})"
+                  title="Equipar item" class="w-4 h-4 accent-[#d4af37] rounded cursor-pointer" />
+              </td>
+              <td class="py-2 px-2 font-medium text-white">${escapeHTML(it.name)}</td>
+              <td class="py-2 px-2">
+                <span class="text-[11px] px-2 py-0.5 rounded bg-[#0d1017] border border-[#283040] text-slate-300">${escapeHTML(it.type || 'Item')}</span>
+              </td>
+              <td class="py-2 px-2 text-xs text-slate-400">${escapeHTML(detailText)}</td>
+              <td class="py-2 px-2 text-center text-xs">${it.qty}</td>
+              <td class="py-2 px-2 text-right text-xs text-slate-300">${lineWeight}</td>
+              <td class="py-2 px-2 text-right no-print">
+                <button type="button" onclick="removeEquipItem(${idx})" class="text-xs text-rose-400 hover:text-rose-300 px-1">✕</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const strScore = Number(char.abilities?.FOR) || 10;
+      const maxCarryLb = strScore * 15;
+      const eqWeight = items.reduce((sum, it) => sum + (Number(it.weight) || 0) * (Number(it.qty) || 1), 0);
+
+      const coins = char.coins || { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
+      const cp = Number(coins.cp) || 0;
+      const sp = Number(coins.sp) || 0;
+      const ep = Number(coins.ep) || 0;
+      const gp = Number(coins.gp) || 0;
+      const pp = Number(coins.pp) || 0;
+
+      // Conversão oficial D&D 5e para PO (Ouro)
+      const totalGP = (cp * 0.01) + (sp * 0.1) + (ep * 0.5) + gp + (pp * 10);
+      // Regra oficial D&D 5e: 50 moedas pesam 1 libra (1 lb)
+      const totalCoinsCount = cp + sp + ep + gp + pp;
+      const coinsWeightLb = totalCoinsCount / 50;
+      const carriedLb = eqWeight + coinsWeightLb;
+
+      document.getElementById('coins-total-gp').textContent = `${totalGP.toFixed(2)} PO`;
+      document.getElementById('coins-weight-lb').textContent = coinsWeightLb.toFixed(1);
+
+      document.getElementById('inv-weight-current').textContent = carriedLb.toFixed(1);
+      document.getElementById('inv-weight-max').textContent = maxCarryLb.toFixed(1);
+      document.getElementById('inv-weight-breakdown').textContent = `Itens: ${eqWeight.toFixed(1)} lb + Moedas: ${coinsWeightLb.toFixed(1)} lb`;
+
+      const pct = Math.min(100, Math.round((carriedLb / Math.max(1, maxCarryLb)) * 100));
+      const bar = document.getElementById('inv-weight-bar');
+      bar.style.width = `${pct}%`;
+      bar.className = carriedLb > maxCarryLb
+        ? 'h-full bg-rose-500 transition-all duration-300'
+        : 'h-full bg-amber-500 transition-all duration-300';
+    }
+
+    function addEquipmentItem(e) {
+      e.preventDefault();
+      const char = getCurrentCharacter();
+      const name = document.getElementById('eq-name').value.trim();
+      if (!name) return;
+
+      const type = document.getElementById('eq-type').value;
+      const qty = Math.max(1, parseInt(document.getElementById('eq-qty').value, 10) || 1);
+      const weight = Math.max(0, parseFloat(document.getElementById('eq-weight').value) || 0);
+      const notes = document.getElementById('eq-notes').value.trim();
+      const acVal = parseInt(document.getElementById('eq-acBase').value, 10) || 0;
+      const armorCategory = document.getElementById('eq-armorCategory').value;
+      const damage = document.getElementById('eq-damage').value.trim();
+
+      char.equipment.push({
+        id: 'eq-' + Date.now(),
+        name,
+        type,
+        armorCategory: type === 'Armadura' ? armorCategory : '',
+        acBase: type === 'Armadura' ? acVal : 0,
+        acBonus: type === 'Escudo' ? (acVal || 2) : 0,
+        damage: type === 'Arma' ? damage : '',
+        notes,
+        qty,
+        weight,
+        equipped: false
+      });
+
+      document.getElementById('eq-name').value = '';
+      document.getElementById('eq-notes').value = '';
+      document.getElementById('eq-damage').value = '';
+      document.getElementById('eq-qty').value = '1';
+
+      saveToStorage();
+      renderEquipment(char);
+    }
+
+    function toggleEquipItem(idx) {
+      const char = getCurrentCharacter();
+      const target = char.equipment[idx];
+      if (!target) return;
+
+      const nextState = !target.equipped;
+      if (nextState && target.type === 'Armadura') {
+        char.equipment.forEach((it, i) => {
+          if (i !== idx && it.type === 'Armadura') it.equipped = false;
+        });
+      }
+      target.equipped = nextState;
+
+      if (char.autoCalcCombat) {
+        char.ac = calculateAutoAC(char);
+      }
+
+      saveToStorage();
+      renderEquipment(char);
+      renderCombatStats(char);
+    }
+
+    function removeEquipItem(idx) {
+      const char = getCurrentCharacter();
+      char.equipment.splice(idx, 1);
+      if (char.autoCalcCombat) {
+        char.ac = calculateAutoAC(char);
+      }
+      saveToStorage();
+      renderEquipment(char);
+      renderCombatStats(char);
+    }
+
+    // --- Aba de Características & História ---
+    function renderFeatures(char) {
+      const list = document.getElementById('features-list');
+      const features = char.features || [];
+      if (features.length === 0) {
+        list.innerHTML = `<p class="col-span-full text-xs text-slate-500 italic">Nenhum talento ou habilidade cadastrado.</p>`;
+        return;
+      }
+
+      list.innerHTML = features.map((ft, idx) => `
+        <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 space-y-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <input type="text" value="${escapeHTML(ft.title)}" oninput="updateFeature(${idx}, 'title', this.value)"
+              placeholder="Nome da habilidade / talento" class="bg-transparent font-bold text-xs text-[#d4af37] focus:outline-none w-full" />
+            <button type="button" onclick="removeFeature(${idx})" class="text-xs text-slate-500 hover:text-rose-400 no-print">✕</button>
+          </div>
+          <textarea rows="2" oninput="updateFeature(${idx}, 'desc', this.value)"
+            placeholder="Descrição mecânica..." class="input-obsidian w-full p-2 text-xs text-slate-300">${escapeHTML(ft.desc || '')}</textarea>
+        </div>
+      `).join('');
+    }
+
+    function addFeature() {
+      const char = getCurrentCharacter();
+      char.features.push({ id: 'ft-' + Date.now(), title: 'Nova Habilidade', desc: '' });
+      saveToStorage();
+      renderFeatures(char);
+    }
+
+    function updateFeature(idx, key, val) {
+      const char = getCurrentCharacter();
+      if (!char.features[idx]) return;
+      char.features[idx][key] = val;
+      saveToStorage();
+    }
+
+    function removeFeature(idx) {
+      const char = getCurrentCharacter();
+      char.features.splice(idx, 1);
+      saveToStorage();
+      renderFeatures(char);
+    }
+
+    // =========================================================================
+    // 3. ROLADOR DE DADOS INTEGRADO D&D 5E
+    // =========================================================================
+    function setAdvantageMode(mode) {
+      advantageMode = mode;
+      const btnDis = document.getElementById('adv-btn-dis');
+      const btnNorm = document.getElementById('adv-btn-norm');
+      const btnAdv = document.getElementById('adv-btn-adv');
+
+      btnDis.className = 'py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-rose-300 transition';
+      btnNorm.className = 'py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition';
+      btnAdv.className = 'py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-emerald-300 transition';
+
+      if (mode === 'disadvantage') {
+        btnDis.className = 'py-1.5 rounded-md text-xs font-bold bg-rose-700 text-white transition';
+      } else if (mode === 'advantage') {
+        btnAdv.className = 'py-1.5 rounded-md text-xs font-bold bg-emerald-600 text-white transition';
+      } else {
+        btnNorm.className = 'py-1.5 rounded-md text-xs font-bold bg-[#d4af37] text-[#0b0d11] transition';
+      }
+    }
+
+    function rollSingleDie(sides) {
+      return Math.floor(Math.random() * sides) + 1;
+    }
+
+    function rollD20WithModifier(mod, label) {
+      const m = Number(mod) || 0;
+      let chosenDie = 0;
+      let detail = '';
+      let highlight = 'normal';
+
+      if (advantageMode === 'advantage') {
+        const r1 = rollSingleDie(20);
+        const r2 = rollSingleDie(20);
+        chosenDie = Math.max(r1, r2);
+        detail = `Vantagem: [${r1}, ${r2}] → ${chosenDie} ${formatSigned(m)}`;
+      } else if (advantageMode === 'disadvantage') {
+        const r1 = rollSingleDie(20);
+        const r2 = rollSingleDie(20);
+        chosenDie = Math.min(r1, r2);
+        detail = `Desvantagem: [${r1}, ${r2}] → ${chosenDie} ${formatSigned(m)}`;
+      } else {
+        chosenDie = rollSingleDie(20);
+        detail = `1d20 [${chosenDie}] ${formatSigned(m)}`;
+      }
+
+      if (chosenDie === 20) {
+        highlight = 'crit20';
+        detail += ' • CRÍTICO (20 Natural)!';
+      } else if (chosenDie === 1) {
+        highlight = 'crit1';
+        detail += ' • FALHA CRÍTICA (1 Natural)!';
+      }
+
+      const total = chosenDie + m;
+      displayRollResult(label, total, detail, highlight);
+    }
+
+    function rollQuickDie(sides) {
+      if (sides === 20) {
+        rollD20WithModifier(0, 'Rolagem d20');
+        return;
+      }
+      const r = rollSingleDie(sides);
+      displayRollResult(`Dado d${sides}`, r, `1d${sides} → [${r}]`, 'normal');
+    }
+
+    function roll4d6DropLowestSingle() {
+      const rolls = [rollSingleDie(6), rollSingleDie(6), rollSingleDie(6), rollSingleDie(6)];
+      const sorted = [...rolls].sort((a, b) => b - a);
+      const total = sorted[0] + sorted[1] + sorted[2];
+      displayRollResult('Atributo (4d6 descarta menor)', total, `Dados: [${rolls.join(', ')}] → soma [${sorted[0]}, ${sorted[1]}, ${sorted[2]}]`, 'normal');
+    }
+
+    function handleCustomDiceSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('custom-dice-expr');
+      const clean = input.value.trim().replace(/\s+/g, '').toLowerCase();
+      if (!clean) return;
+
+      const match = clean.match(/^(\d*)d(\d+)([+-]\d+)?$/);
+      if (!match) {
+        showToast('Use o formato NdX+M (ex: 1d20+5, 2d6+3).', 'error');
+        return;
+      }
+
+      const count = Math.min(50, Math.max(1, parseInt(match[1] || '1', 10)));
+      const sides = Math.min(1000, Math.max(2, parseInt(match[2], 10)));
+      const mod = parseInt(match[3] || '0', 10);
+
+      const rolls = [];
+      for (let i = 0; i < count; i++) rolls.push(rollSingleDie(sides));
+
+      let highlight = 'normal';
+      if (count === 1 && sides === 20) {
+        if (rolls[0] === 20) highlight = 'crit20';
+        else if (rolls[0] === 1) highlight = 'crit1';
+      }
+
+      const total = rolls.reduce((a, b) => a + b, 0) + mod;
+      const detail = `${clean} → [${rolls.join(', ')}] ${mod !== 0 ? formatSigned(mod) : ''}`;
+      displayRollResult(`Expressão (${clean})`, total, detail, highlight);
+    }
+
+    function rollAbilityCheck(abilityKey) {
+      const char = getCurrentCharacter();
+      const def = ABILITY_DEFS.find(a => a.key === abilityKey);
+      const mod = getAbilityModifier(char.abilities?.[abilityKey] ?? 10);
+      rollD20WithModifier(mod, `Teste de ${def ? def.label : abilityKey}`);
+    }
+
+    function rollSavingThrow(abilityKey) {
+      const char = getCurrentCharacter();
+      const def = ABILITY_DEFS.find(a => a.key === abilityKey);
+      const bonus = getSavingThrowBonus(char, abilityKey);
+      rollD20WithModifier(bonus, `Salvaguarda de ${def ? def.label : abilityKey}`);
+    }
+
+    function rollSkillCheck(skillId) {
+      const char = getCurrentCharacter();
+      const sk = SKILLS_5E.find(s => s.id === skillId);
+      if (!sk) return;
+      const bonus = getSkillBonus(char, sk);
+      rollD20WithModifier(bonus, `Perícia: ${sk.name}`);
+    }
+
+    function rollInitiative() {
+      const char = getCurrentCharacter();
+      const dexMod = getAbilityModifier(char.abilities?.DES ?? 10);
+      const totalInit = dexMod + (Number(char.initMisc) || 0);
+      rollD20WithModifier(totalInit, 'Iniciativa');
+    }
+
+    function rollSpellAttack() {
+      const char = getCurrentCharacter();
+      const abilityKey = char.spellAbility || 'NONE';
+      if (abilityKey === 'NONE') {
+        showToast('Selecione um Atributo Conjurador na aba Conjuração.', 'error');
+        return;
+      }
+      const prof = getProficiencyBonus(char.level);
+      const mod = getAbilityModifier(char.abilities?.[abilityKey] ?? 10);
+      rollD20WithModifier(prof + mod, 'Ataque Mágico');
+    }
+
+    function displayRollResult(label, total, detail, highlight) {
+      const totalEl = document.getElementById('dice-roll-total');
+      document.getElementById('dice-roll-label').textContent = label;
+      document.getElementById('dice-roll-detail').textContent = detail;
+      totalEl.textContent = total;
+
+      if (highlight === 'crit20') {
+        totalEl.className = 'font-fantasy text-4xl font-extrabold text-emerald-400 my-1';
+      } else if (highlight === 'crit1') {
+        totalEl.className = 'font-fantasy text-4xl font-extrabold text-rose-500 my-1';
+      } else {
+        totalEl.className = 'font-fantasy text-4xl font-extrabold text-[#d4af37] my-1';
+      }
+
+      diceHistory.unshift({
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        label,
+        detail,
+        total,
+        highlight
+      });
+      if (diceHistory.length > 25) diceHistory.pop();
+      renderDiceLog();
+    }
+
+    function renderDiceLog() {
+      const logEl = document.getElementById('dice-log');
+      if (diceHistory.length === 0) {
+        logEl.innerHTML = `<p class="text-slate-500 italic text-center py-4">Nenhuma rolagem registrada ainda.</p>`;
+        return;
+      }
+
+      logEl.innerHTML = diceHistory.map(item => {
+        const badgeStyle = item.highlight === 'crit20'
+          ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10'
+          : item.highlight === 'crit1'
+            ? 'text-rose-400 border-rose-500/40 bg-rose-500/10'
+            : 'text-[#d4af37] border-[#283040] bg-[#131720]';
+
+        return `
+          <div class="flex items-center justify-between bg-[#0d1017] border border-[#283040]/70 rounded-lg px-2.5 py-1.5">
+            <div class="min-w-0 pr-2">
+              <div class="font-medium text-slate-200 truncate">${escapeHTML(item.label)}</div>
+              <div class="text-[10px] text-slate-500 truncate">${escapeHTML(item.detail)} • ${item.time}</div>
+            </div>
+            <span class="font-fantasy font-bold text-sm px-2 py-0.5 rounded border shrink-0 ${badgeStyle}">
+              ${item.total}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearDiceLog() {
+      diceHistory = [];
+      renderDiceLog();
+      document.getElementById('dice-roll-label').textContent = 'Aguardando rolagem';
+      document.getElementById('dice-roll-total').textContent = '—';
+      document.getElementById('dice-roll-detail').textContent = 'Histórico limpo';
+    }
+
+    // =========================================================================
+    // GERADOR DE ATRIBUTOS (POINT BUY 27 PTS & 4D6 DESCARTANDO MENOR)
+    // =========================================================================
+    function openAbilityGenerator() {
+      const char = getCurrentCharacter();
+      genDraftAbilities = { ...(char.abilities || { FOR: 10, DES: 10, CON: 10, INT: 10, SAB: 10, CAR: 10 }) };
+      renderAbilityGeneratorModal();
+      const modal = document.getElementById('ability-generator-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAbilityGenerator() {
+      const modal = document.getElementById('ability-generator-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      genDraftAbilities = null;
+    }
+
+    function calculatePointBuySpent(draft) {
+      let spent = 0;
+      ABILITY_DEFS.forEach(ab => {
+        const v = Number(draft[ab.key]);
+        if (POINT_BUY_COSTS[v] !== undefined) {
+          spent += POINT_BUY_COSTS[v];
+        }
+      });
+      return { spent, remaining: 27 - spent };
+    }
+
+    function renderAbilityGeneratorModal() {
+      if (!genDraftAbilities) return;
+      const pb = calculatePointBuySpent(genDraftAbilities);
+      const remEl = document.getElementById('pb-remaining');
+      remEl.textContent = `${pb.remaining} / 27 pts`;
+      remEl.className = pb.remaining < 0
+        ? 'ml-2 font-fantasy text-xl font-extrabold text-rose-400'
+        : 'ml-2 font-fantasy text-xl font-extrabold text-[#d4af37]';
+
+      const grid = document.getElementById('generator-abilities-grid');
+      grid.innerHTML = ABILITY_DEFS.map(ab => {
+        const val = genDraftAbilities[ab.key] ?? 10;
+        const mod = formatSigned(getAbilityModifier(val));
+        const cost = POINT_BUY_COSTS[val];
+        const costText = cost !== undefined ? `Custo: ${cost} pt` : 'Fora do 8–15';
+
+        return `
+          <div class="bg-[#0d1017] border border-[#283040] rounded-xl p-3 text-center">
+            <div class="text-xs font-bold text-slate-200">${ab.label} (${ab.key})</div>
+            <div class="font-fantasy text-xl font-extrabold text-[#d4af37] my-1">${mod}</div>
+            <div class="flex items-center justify-center gap-2 my-1.5">
+              <button type="button" onclick="stepGenAbility('${ab.key}', -1)" class="btn-subtle w-7 h-7 text-sm font-bold">-</button>
+              <span class="font-bold text-base text-white w-8">${val}</span>
+              <button type="button" onclick="stepGenAbility('${ab.key}', 1)" class="btn-subtle w-7 h-7 text-sm font-bold">+</button>
+            </div>
+            <div class="flex items-center justify-center gap-2 mt-1">
+              <span class="text-[10px] text-slate-400">${costText}</span>
+              <button type="button" onclick="rollSingle4d6ForDraft('${ab.key}')" class="text-[10px] text-amber-300 hover:underline">🎲 4d6</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function stepGenAbility(key, delta) {
+      if (!genDraftAbilities) return;
+      const cur = Number(genDraftAbilities[key]) || 10;
+      genDraftAbilities[key] = Math.min(20, Math.max(1, cur + delta));
+      renderAbilityGeneratorModal();
+    }
+
+    function resetPointBuyTo8() {
+      genDraftAbilities = { FOR: 8, DES: 8, CON: 8, INT: 8, SAB: 8, CAR: 8 };
+      renderAbilityGeneratorModal();
+    }
+
+    function applyStandardArray5e() {
+      genDraftAbilities = { FOR: 15, DES: 14, CON: 13, INT: 12, SAB: 10, CAR: 8 };
+      renderAbilityGeneratorModal();
+    }
+
+    function roll4d6DropLowestValue() {
+      const rolls = [rollSingleDie(6), rollSingleDie(6), rollSingleDie(6), rollSingleDie(6)];
+      rolls.sort((a, b) => b - a);
+      return rolls[0] + rolls[1] + rolls[2];
+    }
+
+    function rollSingle4d6ForDraft(key) {
+      if (!genDraftAbilities) return;
+      genDraftAbilities[key] = roll4d6DropLowestValue();
+      renderAbilityGeneratorModal();
+    }
+
+    function rollAll4d6DropLowest() {
+      genDraftAbilities = {};
+      ABILITY_DEFS.forEach(ab => {
+        genDraftAbilities[ab.key] = roll4d6DropLowestValue();
+      });
+      renderAbilityGeneratorModal();
+    }
+
+    function applyGeneratedAbilities() {
+      if (!genDraftAbilities) return;
+      const char = getCurrentCharacter();
+      char.abilities = { ...genDraftAbilities };
+      if (char.autoCalcCombat) {
+        char.hpMax = calculateAutoMaxHP(char);
+        char.hpCurrent = char.hpMax;
+        char.ac = calculateAutoAC(char);
+      }
+      saveToStorage();
+      closeAbilityGenerator();
+      renderEditor();
+      showToast('Atributos aplicados à ficha!');
+    }
+
+    // =========================================================================
+    // EXPORTAR / IMPORTAR JSON & UTILITÁRIOS
+    // =========================================================================
+    function manualSave() {
+      saveToStorage(true);
+      showToast('Ficha salva no navegador!');
+    }
+
+    function exportCurrentCharacter() {
+      const char = getCurrentCharacter();
+      if (!char) return;
+      const json = JSON.stringify(char, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const slug = (char.name || 'personagem-5e').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      a.href = url;
+      a.download = `${slug}-dnd5e.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Ficha exportada em JSON!');
+    }
+
+    function importCharacterJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data || typeof data !== 'object' || !data.name) {
+            throw new Error('JSON inválido');
+          }
+          const base = createBlankCharacter5e();
+          const merged = {
+            ...base,
+            ...data,
+            id: 'dnd5e-' + Date.now(),
+            abilities: { ...base.abilities, ...(data.abilities || {}) },
+            deathSaves: { ...base.deathSaves, ...(data.deathSaves || {}) },
+            savingThrows: { ...base.savingThrows, ...(data.savingThrows || {}) },
+            skills: { ...base.skills, ...(data.skills || {}) },
+            spellSlots: { ...base.spellSlots, ...(data.spellSlots || {}) },
+            coins: { ...base.coins, ...(data.coins || {}) },
+            spells: Array.isArray(data.spells) ? data.spells : [],
+            equipment: Array.isArray(data.equipment) ? data.equipment : [],
+            features: Array.isArray(data.features) ? data.features : []
+          };
+          characters.unshift(merged);
+          currentCharId = merged.id;
+          saveToStorage();
+          switchView('editor');
+          showToast(`Ficha "${merged.name}" importada!`);
+        } catch (err) {
+          showToast('Arquivo JSON inválido.', 'error');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const style = type === 'error'
+        ? 'border-rose-500/60 text-rose-200'
+        : 'border-[#d4af37]/60 text-slate-100';
+      el.className = `bg-[#131720] border ${style} px-4 py-2.5 rounded-lg shadow-xl text-xs sm:text-sm flex items-center gap-2 transition-all duration-300`;
+      el.innerHTML = `<span class="text-[#d4af37]">✦</span><span>${escapeHTML(message)}</span>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => el.remove(), 300);
+      }, 2800);
+    }
+
+    let confirmCallback = null;
+    function openConfirmModal(title, message, onConfirm) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      confirmCallback = onConfirm;
+      const m = document.getElementById('confirm-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeConfirmModal() {
+      const m = document.getElementById('confirm-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+      confirmCallback = null;
+    }
+
+    document.getElementById('confirm-yes-btn').addEventListener('click', () => {
+      if (confirmCallback) confirmCallback();
+      closeConfirmModal();
+    });
+
+    function getInitials(name) {
+      return (name || '5E')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0].toUpperCase())
+        .join('');
+    }
+
+    function escapeHTML(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // =========================================================================
+    // INICIALIZAÇÃO
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadFromStorage();
+      renderGallery();
+    });
+  </script>
+</body>
+</html>
